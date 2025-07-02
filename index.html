@@ -24,7 +24,12 @@
 
   <h3>Trip History</h3>
   <ul id="trip-log"></ul>
-  <button onclick="downloadCSV()">Download CSV</button>
+
+  <div class="button-group">
+    <button onclick="downloadCSV()">Download CSV</button>
+    <button onclick="clearHistory()">Clear History</button>
+  </div>
+
   <script src="app.js"></script>
   <script>
     if ("serviceWorker" in navigator) {
