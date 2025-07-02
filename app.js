@@ -82,3 +82,33 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 function toRad(deg) {
   return deg * (Math.PI / 180);
 }
+
+function downloadCSV() {
+  if (trips.length === 0) {
+    alert("No trips to export.");
+    return;
+  }
+
+  const csvHeader = "Date,Distance (miles),Reimbursement ($)\n";
+  const csvRows = trips.map(log => {
+    // Parse readable log like: "7/17/2025, 2:45 PM — 📍 Distance: 2.45 miles 💵 Reimbursement: $1.23"
+    const [datetime, result] = log.split("—");
+    const milesMatch = result.match(/Distance: ([\d.]+) miles/);
+    const reimbMatch = result.match(/Reimbursement: \$([\d.]+)/);
+
+    const miles = milesMatch ? milesMatch[1] : "";
+    const reimb = reimbMatch ? reimbMatch[1] : "";
+
+    return `"${datetime.trim()}","${miles}","${reimb}"`;
+  });
+
+  const csvContent = csvHeader + csvRows.join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `mileage-log-${Date.now()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
