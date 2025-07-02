@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mileage Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h2>Mileage Tracker</h2>
+
+  <label for="rate">Mileage Rate ($ per mile):</label>
+  <input type="number" id="rate" value="0.50" step="0.01" />
+
+  <div class="button-group">
+    <button onclick="startTracking()">Start Trip</button>
+    <button onclick="endTracking()">End Trip</button>
+  </div>
+
+  <div id="results"></div>
+
+  <h3>Trip History</h3>
+  <ul id="trip-log"></ul>
+
+  <script src="app.js"></script>
+</body>
+</html>
