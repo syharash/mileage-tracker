@@ -2,6 +2,7 @@ let startCoords = null;
 let endCoords = null;
 let trips = [];
 
+// Start Trip
 function startTracking() {
   if (!navigator.geolocation) {
     alert("Geolocation is not supported by your browser.");
@@ -20,6 +21,7 @@ function startTracking() {
   );
 }
 
+// End Trip & Calculate Distance/Cost
 function endTracking() {
   if (!startCoords) {
     alert("Please tap Start Trip first.");
@@ -48,7 +50,7 @@ function endTracking() {
       trips.push(log);
       updateLog();
 
-      // Reset
+      // Reset for next trip
       startCoords = null;
       endCoords = null;
     },
@@ -59,6 +61,7 @@ function endTracking() {
   );
 }
 
+// Display Trip Log
 function updateLog() {
   const list = document.getElementById("trip-log");
   list.innerHTML = "";
@@ -69,20 +72,23 @@ function updateLog() {
   });
 }
 
+// Calculate Distance Between 2 GPS Coordinates
 function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 3958.8; // Radius of Earth in miles
+  const R = 3958.8; // miles
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
-  const a = Math.sin(dLat/2)**2 +
-            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-            Math.sin(dLon/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+    Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 function toRad(deg) {
   return deg * (Math.PI / 180);
 }
 
+// Download trip log as CSV
 function downloadCSV() {
   if (trips.length === 0) {
     alert("No trips to export.");
@@ -91,9 +97,8 @@ function downloadCSV() {
 
   const csvHeader = "Date,Distance (miles),Reimbursement ($)\n";
   const csvRows = trips.map(log => {
-    // Parse readable log like: "7/17/2025, 2:45 PM — 📍 Distance: 2.45 miles 💵 Reimbursement: $1.23"
     const [datetime, result] = log.split("—");
-    const milesMatch = result.match(/Distance: ([\d.]+) miles/);
+    const milesMatch = result.match(/Distance: ([\d.]+)/);
     const reimbMatch = result.match(/Reimbursement: \$([\d.]+)/);
 
     const miles = milesMatch ? milesMatch[1] : "";
