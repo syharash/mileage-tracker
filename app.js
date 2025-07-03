@@ -32,23 +32,17 @@ function startTracking() {
   );
 }
 
-function endTracking() {
+async function endTracking() {
   if (!startCoords) {
     alert("Please tap Start Trip first.");
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      endCoords = pos.coords;
+  navigator.geolocation.getCurrentPosition(async pos => {
+    endCoords = pos.coords;
 
-      const distance = calculateDistance(
-        startCoords.latitude,
-        startCoords.longitude,
-        endCoords.latitude,
-        endCoords.longitude
-      );
-
+    try {
+      const distance = await getDrivingDistance(startCoords, endCoords);
       const rate = parseFloat(document.getElementById("rate").value);
       const cost = (distance * rate).toFixed(2);
 
@@ -63,12 +57,29 @@ function endTracking() {
 
       startCoords = null;
       endCoords = null;
-    },
-    err => {
-      alert("❌ Failed to get end location: " + err.message);
-    },
-    { enableHighAccuracy: true }
-  );
+    } catch (err) {
+      alert("❌ Error getting driving distance: " + err.message);
+    }
+  }, err => {
+    alert("❌ Failed to get end location: " + err.message);
+  }, { enableHighAccuracy: true });
+}
+
+async function getDrivingDistance(start, end) {
+  const apiKey = "AIzaSyCbJgUNmcagzbSGb6QB3vWGvtbq3sUuPns"; // 🔁 Replace with your actual key
+  const origin = `${start.latitude},${start.longitude}`;
+  const destination = `${end.latitude},${end.longitude}`;
+  const endpoint = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}`;
+
+  const response = await fetch(endpoint);
+  const data = await response.json();
+
+  if (data.status === "OK") {
+    const meters = data.routes[0].legs[0].distance.value;
+    return meters / 1609.34; // meters to miles
+  } else {
+    throw new Error(data.error_message || data.status);
+  }
 }
 
 function updateLog() {
@@ -124,21 +135,6 @@ function clearHistory() {
   }
 }
 
-function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 3958.8;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-    Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-function toRad(deg) {
-  return deg * (Math.PI / 180);
-}
-
 function downloadCSV() {
   if (trips.length === 0) {
     alert("No trips to export.");
@@ -166,4 +162,8 @@ function downloadCSV() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+function toRad(deg) {
+  return deg * (Math.PI / 180);
 }
