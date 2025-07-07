@@ -86,3 +86,15 @@ input[type="number"] {
     flex-direction: column;
   }
 }
+#toast {
+  visibility: hidden;
+  min-width: 200px;
+  background-color: #323232;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  position: fixed;
+  left: 50%;
+  bottom: 2rem;
+}
