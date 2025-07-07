@@ -2,60 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mileage Tracker</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mileage Tracker App</title>
   <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script>
-  if (typeof navigator.serviceWorker !== 'undefined') {
-    navigator.serviceWorker.register('sw.js')
-  }
-</script>
 </head>
 <body>
-  <h2>Mileage Tracker</h2>
-
+  <h2>Mileage Tracker 🚗</h2>
   <div id="signin-container"></div>
-  <p id="welcome-msg"></p>
+  <div id="welcome-msg"></div>
 
-  <label for="rate">Mileage Rate ($ per mile):</label>
-  <input type="number" id="rate" value="0.50" step="0.01" />
+  <label for="rate">Reimbursement Rate ($ per mile):</label>
+  <input type="number" id="rate" value="0.655" step="0.001"/>
 
   <div class="button-group">
     <button onclick="startTracking()">Start Trip</button>
     <button onclick="pauseTracking()">Pause Trip</button>
     <button onclick="resumeTracking()">Resume Trip</button>
     <button onclick="endTracking()">End Trip</button>
-  </div>
-
-  <div id="results"></div>
-
-  <h3>Summary</h3>
-  <div id="summary">
-    <p><strong>Today:</strong> <span id="today-summary">–</span></p>
-    <p><strong>This Week:</strong> <span id="week-summary">–</span></p>
-  </div>
-
-  <h3>Trip History</h3>
-  <ul id="trip-log"></ul>
-
-  <div class="button-group">
     <button onclick="downloadCSV()">Download CSV</button>
     <button onclick="clearHistory()">Clear History</button>
   </div>
 
-  <script src="app.js"></script>
-  <script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js").then(() => {
-      console.log("✅ Service Worker registered");
-    });
-  }
-</script>
+  <div id="results"></div>
+
+  <h3>Trip Log 📍</h3>
+  <ul id="trip-log"></ul>
+
+  <h3>Summary 🧾</h3>
+  <p><strong>Today:</strong> <span id="today-summary">0 mi | $0.00</span></p>
+  <p><strong>This Week:</strong> <span id="week-summary">0 mi | $0.00</span></p>
+
+  <!-- Toast for feedback -->
   <div id="toast"></div>
+
+  <!-- Sound cues -->
   <audio id="sound-pause" src="https://cdn.jsdelivr.net/gh/haroonrasheed/assets/sounds/pause.mp3" preload="auto"></audio>
   <audio id="sound-resume" src="https://cdn.jsdelivr.net/gh/haroonrasheed/assets/sounds/resume.mp3" preload="auto"></audio>
   <audio id="sound-default" src="https://cdn.jsdelivr.net/gh/haroonrasheed/assets/sounds/default.mp3" preload="auto"></audio>
+
+  <script src="app.js"></script>
 </body>
 </html>
