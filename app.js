@@ -32,20 +32,19 @@ function handleCredentialResponse(response) {
 function showToast(message, type = "default") {
   const toast = document.getElementById("toast");
   toast.innerText = message;
-
   toast.className = "";
   toast.classList.add("toast-" + type, "show");
-
-  // Vibration feedback (mobile only)
   navigator.vibrate?.(100);
-
-  // Play contextual sound
   const audio = document.getElementById("sound-" + type) || document.getElementById("sound-default");
   audio?.play();
-
   setTimeout(() => {
     toast.classList.remove("show");
   }, 2000);
+}
+
+function toggleHelp() {
+  const help = document.getElementById("help-screen");
+  help.style.display = help.style.display === "none" ? "block" : "none";
 }
 
 function saveTrips() {
@@ -87,10 +86,7 @@ function resumeTracking() {
     alert("Trip already running.");
     return;
   }
-function toggleHelp() {
-  const help = document.getElementById("help-screen");
-  help.style.display = help.style.display === "none" ? "block" : "none";
-}
+
   navigator.geolocation.getCurrentPosition(
     pos => {
       startCoords = pos.coords;
