@@ -1,24 +1,88 @@
 body {
-  font-family: sans-serif;
-  max-width: 500px;
-  margin: auto;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0 auto;
   padding: 1rem;
+  max-width: 600px;
+  background: #f7f9fa;
+  color: #333;
 }
 
-input, button {
+h2, h3 {
+  text-align: center;
+  color: #4CAF50;
+  margin-bottom: 0.5rem;
+}
+
+label {
+  font-weight: bold;
   display: block;
-  margin: 1rem 0;
+  margin-top: 1rem;
+}
+
+input[type="number"] {
   width: 100%;
   padding: 0.5rem;
+  margin-top: 0.25rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .button-group {
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.button-group button {
+  padding: 0.75rem 1.25rem;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.button-group button:hover {
+  background: #388E3C;
 }
 
 #results {
+  background: #e0f7e9;
+  border: 1px solid #c5e1c9;
+  padding: 1rem;
   margin-top: 1rem;
-  font-weight: bold;
-  color: green;
+  border-radius: 6px;
+  white-space: pre-line;
+}
+
+#trip-log {
+  list-style: none;
+  padding-left: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 0.5rem 0;
+}
+
+#trip-log li {
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+  font-family: monospace;
+}
+
+#welcome-msg {
+  font-weight: 600;
+  color: #2E7D32;
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+@media (max-width: 480px) {
+  .button-group {
+    flex-direction: column;
+  }
 }
