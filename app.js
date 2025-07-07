@@ -29,6 +29,25 @@ function handleCredentialResponse(response) {
     `Welcome, ${currentUser.name || currentUser.email}`;
 }
 
+function showToast(message, type = "default") {
+  const toast = document.getElementById("toast");
+  toast.innerText = message;
+
+  toast.className = "";
+  toast.classList.add("toast-" + type, "show");
+
+  // Vibration feedback (mobile only)
+  navigator.vibrate?.(100);
+
+  // Play contextual sound
+  const audio = document.getElementById("sound-" + type) || document.getElementById("sound-default");
+  audio?.play();
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2000);
+}
+
 function saveTrips() {
   localStorage.setItem("tripLog", JSON.stringify(trips));
 }
@@ -36,15 +55,10 @@ function saveTrips() {
 function startTracking() {
   tripSegments = [];
   startCoords = null;
-  if (!navigator.geolocation) {
-    alert("Geolocation is not supported.");
-    return;
-  }
-
   navigator.geolocation.getCurrentPosition(
     pos => {
       startCoords = pos.coords;
-      alert("Trip started.");
+      showToast("🚀 Trip started", "resume");
     },
     err => alert("Failed to get location: " + err.message),
     { enableHighAccuracy: true }
@@ -53,7 +67,7 @@ function startTracking() {
 
 function pauseTracking() {
   if (!startCoords) {
-    alert("No active trip segment to pause.");
+    alert("No active trip to pause.");
     return;
   }
 
@@ -61,7 +75,7 @@ function pauseTracking() {
     pos => {
       tripSegments.push({ start: startCoords, end: pos.coords });
       startCoords = null;
-      alert("Trip paused.");
+      showToast("⏸️ Trip paused", "pause");
     },
     err => alert("Pause failed: " + err.message),
     { enableHighAccuracy: true }
@@ -70,14 +84,14 @@ function pauseTracking() {
 
 function resumeTracking() {
   if (startCoords) {
-    alert("Trip is already running.");
+    alert("Trip already running.");
     return;
   }
 
   navigator.geolocation.getCurrentPosition(
     pos => {
       startCoords = pos.coords;
-      alert("Trip resumed.");
+      showToast("▶️ Trip resumed", "resume");
     },
     err => alert("Resume failed: " + err.message),
     { enableHighAccuracy: true }
@@ -86,7 +100,7 @@ function resumeTracking() {
 
 async function endTracking() {
   if (!startCoords) {
-    alert("You must resume the trip before ending it.");
+    alert("Resume trip before ending.");
     return;
   }
 
@@ -110,7 +124,7 @@ async function endTracking() {
       trips.push(log);
       saveTrips();
       updateLog();
-      alert("Trip ended.");
+      showToast("🛑 Trip ended", "default");
     } catch (err) {
       alert("Error calculating distance: " + err.message);
     }
@@ -125,8 +139,7 @@ async function getDrivingDistance(start, end) {
   const data = await response.json();
 
   if (data.status === "OK") {
-    const meters = data.routes[0].legs[0].distance.value;
-    return meters / 1609.34;
+    return data.routes[0].legs[0].distance.value / 1609.34;
   } else {
     throw new Error(data.status);
   }
@@ -179,6 +192,7 @@ function clearHistory() {
     localStorage.removeItem("tripLog");
     updateLog();
     document.getElementById("results").innerText = "";
+    showToast("🗑️ History cleared", "default");
   }
 }
 
