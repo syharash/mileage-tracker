@@ -89,7 +89,6 @@ input[type="number"] {
 #toast {
   visibility: hidden;
   min-width: 200px;
-  background-color: #323232;
   color: #fff;
   text-align: center;
   border-radius: 6px;
@@ -97,4 +96,28 @@ input[type="number"] {
   position: fixed;
   left: 50%;
   bottom: 2rem;
+  transform: translateX(-50%);
+  z-index: 99;
+  font-size: 0.95rem;
+  opacity: 0;
+  transition: opacity 0.4s ease, bottom 0.4s ease;
+}
+
+/* Dynamic classes for different message types */
+.toast-pause {
+  background-color: #f9a825; /* amber */
+}
+
+.toast-resume {
+  background-color: #43a047; /* green */
+}
+
+.toast-default {
+  background-color: #323232; /* neutral fallback */
+}
+
+#toast.show {
+  visibility: visible;
+  opacity: 1;
+  bottom: 3.5rem;
 }
