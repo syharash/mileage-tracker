@@ -7,6 +7,11 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+  if (typeof navigator.serviceWorker !== 'undefined') {
+    navigator.serviceWorker.register('sw.js')
+  }
+</script>
 </head>
 <body>
   <h2>Mileage Tracker</h2>
