@@ -23,6 +23,7 @@
     <button onclick="endTracking()">End Trip</button>
     <button onclick="downloadCSV()">Download CSV</button>
     <button onclick="clearHistory()">Clear History</button>
+    <button onclick="toggleHelp()">Help</button>
   </div>
 
   <div id="results"></div>
@@ -43,5 +44,22 @@
   <audio id="sound-default" src="https://cdn.jsdelivr.net/gh/haroonrasheed/assets/sounds/default.mp3" preload="auto"></audio>
 
   <script src="app.js"></script>
+
+  <div id="help-screen" style="display:none">
+  <h3>📖 Getting Started Guide</h3>
+  <p>Welcome to the Mileage Tracker App! Here's how to get rolling:</p>
+  <ul>
+    <li><strong>Sign In:</strong> Use Google Sign-In for personalized exports</li>
+    <li><strong>Start Trip:</strong> Begins tracking from your current location</li>
+    <li><strong>Pause Trip:</strong> Temporarily stops tracking (⏸️ toast + sound)</li>
+    <li><strong>Resume Trip:</strong> Resumes tracking from new location (▶️ toast)</li>
+    <li><strong>End Trip:</strong> Finalizes log and shows reimbursement total</li>
+    <li><strong>CSV Export:</strong> Generates a file with all logged trips</li>
+    <li><strong>Clear History:</strong> Wipes local logs if needed</li>
+    <li><strong>Toast Alerts:</strong> Visual + audio feedback on each action</li>
+    <li><strong>Trip Summary:</strong> Daily & weekly mileage at a glance</li>
+  </ul>
+  <p><em>Note: The CSV includes all completed trips stored locally.</em></p>
+</div>
 </body>
 </html>
