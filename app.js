@@ -87,7 +87,10 @@ function resumeTracking() {
     alert("Trip already running.");
     return;
   }
-
+function toggleHelp() {
+  const help = document.getElementById("help-screen");
+  help.style.display = help.style.display === "none" ? "block" : "none";
+}
   navigator.geolocation.getCurrentPosition(
     pos => {
       startCoords = pos.coords;
