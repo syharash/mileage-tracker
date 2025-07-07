@@ -1,14 +1,11 @@
 {
   "name": "Mileage Tracker",
-  "short_name": "MileageApp",
-  "start_url": "index.html",
-  "display": "standalone", 
-  "theme_color": "#e8f414",
-  "background_color": "#1edb6a",
-  "short_name": "MTA",
-  "id": "Syharash",
-  "description": "Mileage Tracker is a lightweight web app that lets you log your trips, track mileage using GPS, and instantly calculate your reimbursement based on your custom rate. Perfect for contractors, delivery drivers, or anyone who travels for work.\n\n✅ Start &amp; end trip with one tap  \n📍 Accurate GPS tracking via Google Maps  \n📊 Download mileage reports as CSV  \n🔐 No logins or data sent to servers  \n📱 Works offline and installable as an app\n\nBuilt to respect your privacy and your time."
-}
+  "short_name": "Mileage",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4CAF50",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icon-192.png",
@@ -20,5 +17,14 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "description": "Track mileage with GPS and calculate reimbursements instantly. Designed for nonprofits and field workers.Mileage Tracker is a lightweight web app that lets you log your trips, track mileage using GPS, and instantly calculate your reimbursement based on your custom rate. Perfect for contractors, delivery drivers, or anyone who travels for work.
+
+✅ Start & end trip with one tap  
+📍 Accurate GPS tracking via Google Maps  
+📊 Download mileage reports as CSV  
+🔐 No logins or data sent to servers  
+📱 Works offline and installable as an app
+
+Built to respect your privacy and your time."
 }
