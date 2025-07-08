@@ -131,7 +131,7 @@ async function endTracking() {
 }
 
 async function getDrivingDistance(start, end) {
-  const apiKey = "YOUR_GOOGLE_MAPS_API_KEY";
+  const apiKey = "AIzaSyCbJgUNmcagzbSGb6QB3vWGvtbq3sUuPns";
   const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&key=${apiKey}`;
 
   const response = await fetch(url);
