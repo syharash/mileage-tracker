@@ -6,7 +6,13 @@
   <title>Mileage Tracker App</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- Load Google Maps JS API for client-side DirectionsService -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI&libraries=places"
+    async
+    defer>
+  </script>
 </head>
 <body>
   <h2>Mileage Tracker 🚗</h2>
@@ -48,8 +54,10 @@
     <p>5. View logs below, export with CSV, and reset when needed.</p>
   </div>
 
+  <!-- Toast container -->
   <div id="toast"></div>
 
+  <!-- Your existing logic—but swap out the two fetch‐based methods! -->
   <script src="app.js"></script>
 </body>
 </html>
