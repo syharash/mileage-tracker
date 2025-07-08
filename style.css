@@ -1,108 +1,77 @@
+/* ===== Global Styles ===== */
 body {
-  font-family: 'Segoe UI', sans-serif;
-  margin: 0 auto;
-  padding: 1rem;
-  max-width: 600px;
-  background: #f7f9fa;
+  font-family: Arial, sans-serif;
+  margin: 1rem;
+  padding: 0;
+  background-color: #f4f4f4;
   color: #333;
 }
 
-h2, h3 {
-  text-align: center;
-  color: #4CAF50;
+h2, h3, h4 {
   margin-bottom: 0.5rem;
-}
-
-label {
-  font-weight: bold;
-  display: block;
-  margin-top: 1rem;
-}
-
-input[type="number"] {
-  width: 100%;
-  padding: 0.5rem;
-  margin-top: 0.25rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  color: #222;
 }
 
 .button-group {
+  margin: 1rem 0;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
-  margin: 1rem 0;
+  gap: 0.5rem;
 }
 
-.button-group button {
-  padding: 0.75rem 1.25rem;
-  background: #4CAF50;
+button {
+  padding: 10px 14px;
+  background-color: #1976d2;
   color: white;
   border: none;
   border-radius: 6px;
-  font-size: 1rem;
   cursor: pointer;
-  transition: background 0.3s ease;
+  font-size: 0.95rem;
 }
 
-.button-group button:hover {
-  background: #388E3C;
+button:hover {
+  background-color: #125faa;
 }
 
-#results {
-  background: #e0f7e9;
-  border: 1px solid #c5e1c9;
-  padding: 1rem;
-  margin-top: 1rem;
-  border-radius: 6px;
-  white-space: pre-line;
-}
-
-#trip-log {
-  list-style: none;
-  padding-left: 0;
-  max-height: 200px;
-  overflow-y: auto;
+input[type="number"] {
+  padding: 8px;
   margin: 0.5rem 0;
+  width: 120px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* ===== Trip Log & Summary ===== */
+#trip-log {
+  list-style-type: none;
+  padding-left: 0;
 }
 
 #trip-log li {
-  padding: 0.5rem;
-  border-bottom: 1px solid #ddd;
-  font-family: monospace;
+  margin: 6px 0;
+  padding: 6px 10px;
+  background-color: #fff;
+  border-left: 4px solid #1976d2;
+  border-radius: 4px;
 }
 
-#welcome-msg {
-  font-weight: 600;
-  color: #2E7D32;
-  text-align: center;
-  margin-bottom: 0.75rem;
-}
-
-@media (max-width: 480px) {
-  .button-group {
-    flex-direction: column;
-  }
-}
-#toast {
-  visibility: hidden;
-  min-width: 200px;
-  color: #fff;
-  text-align: center;
+#trip-summary {
+  background-color: #fff;
+  border: 1px solid #ddd;
   border-radius: 6px;
-  padding: 0.75rem 1rem;
-  position: fixed;
-  left: 50%;
-  bottom: 2rem;
-  transform: translateX(-50%);
-  z-index: 99;
-  font-size: 0.95rem;
-  opacity: 0;
-  transition: opacity 0.4s ease, bottom 0.4s ease;
+  padding: 1rem;
+  max-width: 500px;
 }
-/* ======= TOAST ======= */
+
+/* ===== Help Section ===== */
+#help-screen {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+/* ===== Toast Notification ===== */
 #toast {
   visibility: hidden;
   min-width: 220px;
@@ -127,21 +96,18 @@ input[type="number"] {
   visibility: visible;
   opacity: 1;
 }
-/* Dynamic classes for different message types */
-.toast-pause {
-  background-color: #f9a825; /* amber */
-}
 
-.toast-resume {
-  background-color: #43a047; /* green */
-}
+/* ===== Responsive Layout ===== */
+@media screen and (max-width: 600px) {
+  .button-group {
+    flex-direction: column;
+  }
 
-.toast-default {
-  background-color: #323232; /* neutral fallback */
-}
+  #trip-summary, #help-screen {
+    padding: 0.75rem;
+  }
 
-#toast.show {
-  visibility: visible;
-  opacity: 1;
-  bottom: 3.5rem;
+  button {
+    width: 100%;
+  }
 }
