@@ -4,7 +4,7 @@ let tripEnd = null;
 let tripLog = [];
 let map, directionsService, directionsRenderer;
 
-const apiKey = "YOUR_API_KEY"; // replace with your key
+const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI"; // replace with your key
 
 // Initialize map+directions
 function initMapServices() {
