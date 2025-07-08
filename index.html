@@ -10,11 +10,9 @@
 </head>
 <body>
   <h2>Mileage Tracker 🚗</h2>
-  <div id="signin-container"></div>
-  <div id="welcome-msg"></div>
 
-  <label for="rate">Reimbursement Rate ($ per mile):</label>
-  <input type="number" id="rate" value="0.55" step="0.001"/>
+  <label for="rate">Reimbursement Rate ($/mi):</label>
+  <input type="number" id="rate" value="0.655" step="0.001" />
 
   <div class="button-group">
     <button onclick="startTracking()">Start Trip</button>
@@ -26,8 +24,6 @@
     <button onclick="toggleHelp()">Help</button>
   </div>
 
-  <div id="results"></div>
-
   <h3>Trip Log 📍</h3>
   <ul id="trip-log"></ul>
 
@@ -35,8 +31,7 @@
   <p><strong>Today:</strong> <span id="today-summary">0 mi | $0.00</span></p>
   <p><strong>This Week:</strong> <span id="week-summary">0 mi | $0.00</span></p>
 
-  <!-- Trip Summary Panel -->
-  <div id="trip-summary" style="margin-top:1rem; padding:0.5rem; border:1px solid #ccc; border-radius:5px;">
+  <div id="trip-summary">
     <h4>🧭 Last Trip Summary</h4>
     <p><strong>Start:</strong> <span id="summary-start">–</span></p>
     <p><strong>End:</strong> <span id="summary-end">–</span></p>
@@ -44,13 +39,15 @@
     <p><strong>Duration:</strong> <span id="summary-duration">–</span></p>
   </div>
 
-  <!-- Help Section -->
-  <div id="help-screen" style="display:none; margin-top: 1.5rem;">
-    <h3>📖 Getting Started Guide</h3>
-    <!-- Help content omitted for brevity -->
+  <div id="help-screen" style="display:none;">
+    <h3>📘 Help Guide</h3>
+    <p>1. Set your reimbursement rate per mile.</p>
+    <p>2. Tap “Start Trip” to begin tracking.</p>
+    <p>3. Use pause/resume if needed.</p>
+    <p>4. Tap “End Trip” to log the mileage and reimbursement.</p>
+    <p>5. View logs below, export with CSV, and reset when needed.</p>
   </div>
 
-  <!-- Toast for feedback -->
   <div id="toast"></div>
 
   <script src="app.js"></script>
