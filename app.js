@@ -36,8 +36,8 @@ function showToast(message, type = "default") {
   toast.className = "";
   toast.classList.add("toast-" + type, "show");
   navigator.vibrate?.(100);
-  const audio = document.getElementById("sound-" + type) || document.getElementById("sound-default");
-  audio?.play();
+//  const audio = document.getElementById("sound-" + type) || document.getElementById("sound-default");
+// audio?.play();
   setTimeout(() => toast.classList.remove("show"), 2000);
 }
 
