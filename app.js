@@ -3,7 +3,7 @@ let tripStart = null;
 let tripEnd = null;
 let tripLog = [];
 
-const apiKey = "YOUR_API_KEY"; // Replace with your actual Google Maps key
+const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI"; // Replace with your actual Google Maps key
 
 function startTracking() {
   navigator.geolocation.getCurrentPosition(
