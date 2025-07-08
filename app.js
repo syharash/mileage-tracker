@@ -155,24 +155,37 @@ function showToast(message, type) {
   setTimeout(() => toast.className = toast.className.replace("show", ""), 3000);
 }
 
-async function getDrivingDistance(start, end) {
-  if (!start || !end || !start.latitude || !start.longitude || !end.latitude || !end.longitude) {
-    throw new Error("Missing or invalid GPS coordinates.");
-  }
-
-  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&mode=driving&key=${apiKey}`;
-
-  const response = await fetch(url);
-  if (!response.ok) throw new Error("Network error");
-
-  const data = await response.json();
-  if (data.status !== "OK") throw new Error("Directions API error: " + data.status);
-
-  return data.routes[0].legs[0].distance.value / 1609.34; // meters → miles
+// client‐side directions via Google Maps JS API
+function getDrivingDistance(start, end) {
+  return new Promise((resolve, reject) => {
+    const ds = new google.maps.DirectionsService();
+    ds.route({
+      origin: { lat: start.latitude, lng: start.longitude },
+      destination: { lat: end.latitude, lng: end.longitude },
+      travelMode: google.maps.TravelMode.DRIVING
+    }, (result, status) => {
+      if (status === 'OK') {
+        const leg = result.routes[0].legs[0];
+        resolve(leg.distance.value / 1609.34);  // meters → miles
+      } else {
+        reject(new Error('DirectionsService failed: ' + status));
+      }
+    });
+  });
 }
 
-async function fetchRouteData(start, end) {
-  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&mode=driving&key=${apiKey}`;
-  const response = await fetch(url);
-  return await response.json();
+
+// if you still need the full route JSON for addresses, etc.
+function fetchRouteData(start, end) {
+  return new Promise((resolve, reject) => {
+    const ds = new google.maps.DirectionsService();
+    ds.route({
+      origin: { lat: start.latitude, lng: start.longitude },
+      destination: { lat: end.latitude, lng: end.longitude },
+      travelMode: google.maps.TravelMode.DRIVING
+    }, (result, status) => {
+      if (status === 'OK') resolve(result);
+      else reject(new Error('DirectionsService failed: ' + status));
+    });
+  });
 }
