@@ -1,25 +1,55 @@
-/* ===== Global Styles ===== */
+/* ===== Centered Container ===== */
+.container {
+  max-width: 600px;
+  margin: 2rem auto;
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* ===== Global ===== */
 body {
   font-family: Arial, sans-serif;
-  margin: 1rem;
-  padding: 0;
   background-color: #f4f4f4;
   color: #333;
 }
 
 h2, h3, h4 {
+  text-align: center;
   margin-bottom: 0.5rem;
-  color: #222;
 }
 
+.field-group {
+  margin-bottom: 0.75rem;
+}
+
+.field-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+}
+
+.field-group input,
+.field-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+/* ===== Buttons ===== */
 .button-group {
-  margin: 1rem 0;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
 }
 
 button {
+  flex: 1 1 120px;
   padding: 10px 14px;
   background-color: #1976d2;
   color: white;
@@ -33,61 +63,61 @@ button:hover {
   background-color: #125faa;
 }
 
-input[type="number"] {
-  padding: 8px;
-  margin: 0.5rem 0;
-  width: 120px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-/* ===== Trip Log & Summary ===== */
+/* ===== Trip Log ===== */
 #trip-log {
-  list-style-type: none;
+  list-style: none;
   padding-left: 0;
 }
 
 #trip-log li {
-  margin: 6px 0;
-  padding: 6px 10px;
-  background-color: #fff;
+  background: #fafafa;
   border-left: 4px solid #1976d2;
+  margin: 6px 0;
+  padding: 8px 12px;
   border-radius: 4px;
 }
 
+/* ===== Summary Panel ===== */
 #trip-summary {
-  background-color: #fff;
+  background: #fafafa;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* ===== Map & Directions ===== */
+#map {
+  width: 100%;
+  height: 300px;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+}
+
+#directions-panel {
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 6px;
-  padding: 1rem;
-  max-width: 500px;
+  background: #fafafa;
 }
 
-/* ===== Help Section ===== */
-#help-screen {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 1rem;
-}
-
-/* ===== Toast Notification ===== */
+/* ===== Toast ===== */
 #toast {
   visibility: hidden;
-  min-width: 220px;
-  max-width: 90%;
+  min-width: 200px;
   background-color: #222;
   color: #fff;
-  font-size: 0.95rem;
-  padding: 12px 16px;
+  text-align: center;
   border-radius: 8px;
+  padding: 12px 16px;
   position: fixed;
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   opacity: 0;
   transition: opacity 0.5s ease, visibility 0.5s ease;
 }
@@ -97,17 +127,7 @@ input[type="number"] {
   opacity: 1;
 }
 
-/* ===== Responsive Layout ===== */
-@media screen and (max-width: 600px) {
-  .button-group {
-    flex-direction: column;
-  }
-
-  #trip-summary, #help-screen {
-    padding: 0.75rem;
-  }
-
-  button {
-    width: 100%;
-  }
+@media (max-width: 600px) {
+  .container { margin: 1rem; }
+  button { flex: 1 1 100%; }
 }
