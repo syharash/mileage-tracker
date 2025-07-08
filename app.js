@@ -2,6 +2,7 @@ let startCoords = null;
 let tripSegments = [];
 let trips = [];
 let currentUser = null;
+const apiKey = "AIzaSyCbJgUNmcagzbSGb6QB3vWGvtbq3sUuPns";
 
 window.onload = function () {
   const savedTrips = localStorage.getItem("tripLog");
@@ -37,9 +38,7 @@ function showToast(message, type = "default") {
   navigator.vibrate?.(100);
   const audio = document.getElementById("sound-" + type) || document.getElementById("sound-default");
   audio?.play();
-  setTimeout(() => {
-    toast.classList.remove("show");
-  }, 2000);
+  setTimeout(() => toast.classList.remove("show"), 2000);
 }
 
 function toggleHelp() {
@@ -51,16 +50,36 @@ function saveTrips() {
   localStorage.setItem("tripLog", JSON.stringify(trips));
 }
 
+function getLocation(callback, errorHandler) {
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      const coords = position.coords;
+      if (!coords || coords.latitude === 0 || coords.longitude === 0) {
+        errorHandler?.("Invalid GPS coordinates.");
+        return;
+      }
+      callback(coords);
+    },
+    error => {
+      errorHandler?.("GPS error: " + error.message);
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    }
+  );
+}
+
 function startTracking() {
   tripSegments = [];
   startCoords = null;
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      startCoords = pos.coords;
+  getLocation(
+    coords => {
+      startCoords = coords;
       showToast("🚀 Trip started", "resume");
     },
-    err => alert("Failed to get location: " + err.message),
-    { enableHighAccuracy: true }
+    msg => alert(msg)
   );
 }
 
@@ -70,14 +89,13 @@ function pauseTracking() {
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      tripSegments.push({ start: startCoords, end: pos.coords });
+  getLocation(
+    coords => {
+      tripSegments.push({ start: startCoords, end: coords });
       startCoords = null;
       showToast("⏸️ Trip paused", "pause");
     },
-    err => alert("Pause failed: " + err.message),
-    { enableHighAccuracy: true }
+    msg => alert("Pause failed: " + msg)
   );
 }
 
@@ -87,13 +105,12 @@ function resumeTracking() {
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      startCoords = pos.coords;
+  getLocation(
+    coords => {
+      startCoords = coords;
       showToast("▶️ Trip resumed", "resume");
     },
-    err => alert("Resume failed: " + err.message),
-    { enableHighAccuracy: true }
+    msg => alert("Resume failed: " + msg)
   );
 }
 
@@ -103,8 +120,8 @@ async function endTracking() {
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(async pos => {
-    tripSegments.push({ start: startCoords, end: pos.coords });
+  getLocation(async coords => {
+    tripSegments.push({ start: startCoords, end: coords });
     startCoords = null;
 
     try {
@@ -115,10 +132,9 @@ async function endTracking() {
 
       const rate = parseFloat(document.getElementById("rate").value);
       const cost = (totalDistance * rate).toFixed(2);
-
       const result = `📍 Distance: ${totalDistance.toFixed(2)} miles\n💵 Reimbursement: $${cost}`;
-      document.getElementById("results").innerText = result;
 
+      document.getElementById("results").innerText = result;
       const log = `${new Date().toLocaleString()} — ${result}`;
       trips.push(log);
       saveTrips();
@@ -127,20 +143,23 @@ async function endTracking() {
     } catch (err) {
       alert("Error calculating distance: " + err.message);
     }
-  });
+  }, msg => alert("End failed: " + msg));
 }
 
 async function getDrivingDistance(start, end) {
-  const apiKey = "AIzaSyCbJgUNmcagzbSGb6QB3vWGvtbq3sUuPns";
-  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&key=${apiKey}`;
+  if (!start || !end || !start.latitude || !end.latitude) {
+    throw new Error("Missing valid coordinates.");
+  }
 
+  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&mode=driving&key=${apiKey}`;
   const response = await fetch(url);
   const data = await response.json();
 
-  if (data.status === "OK") {
+  if (data.status === "OK" && data.routes.length > 0) {
     return data.routes[0].legs[0].distance.value / 1609.34;
   } else {
-    throw new Error(data.status);
+    console.warn("Direction API error:", data.error_message || data.status);
+    throw new Error("Failed to calculate route. " + (data.error_message || data.status));
   }
 }
 
@@ -214,8 +233,8 @@ function downloadCSV() {
   const blob = new Blob([csvHeader + csvRows.join("\n")], {
     type: "text/csv;charset=utf-8;"
   });
-  const url = URL.createObjectURL(blob);
 
+  const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
   a.download = `mileage-log-${Date.now()}.csv`;
