@@ -155,19 +155,36 @@ async function endTracking() {
 }
 
 async function getDrivingDistance(start, end) {
-  if (!start || !end || !start.latitude || !end.latitude) {
-    throw new Error("Missing valid coordinates.");
+  if (
+    !start || !end ||
+    !start.latitude || !start.longitude ||
+    !end.latitude || !end.longitude ||
+    isNaN(start.latitude) || isNaN(start.longitude) ||
+    isNaN(end.latitude) || isNaN(end.longitude)
+  ) {
+    console.warn("🚫 Invalid coordinates", start, end);
+    throw new Error("Missing or invalid GPS coordinates.");
   }
 
-  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&mode=driving&key=${apiKey}`;
-  const response = await fetch(url);
-  const data = await response.json();
+  console.log("📍 Requesting route from:", start.latitude, start.longitude,
+              "to:", end.latitude, end.longitude);
 
-  if (data.status === "OK" && data.routes.length > 0) {
-    return data.routes[0].legs[0].distance.value / 1609.34;
-  } else {
-    console.warn("Direction API error:", data.error_message || data.status);
-    throw new Error("Failed to calculate route. " + (data.error_message || data.status));
+  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&mode=driving&key=${apiKey}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.status === "OK" && data.routes.length > 0) {
+      const meters = data.routes[0].legs[0].distance.value;
+      return meters / 1609.34; // Convert meters to miles
+    } else {
+      console.warn("📡 API error:", data.status, data.error_message);
+      throw new Error("Directions API returned: " + (data.error_message || data.status));
+    }
+  } catch (err) {
+    console.error("🔥 Fetch failed:", err);
+    throw new Error("Failed to fetch route. Check internet or GPS.");
   }
 }
 
