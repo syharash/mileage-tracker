@@ -54,8 +54,16 @@ function getLocation(callback, errorHandler) {
   navigator.geolocation.getCurrentPosition(
     position => {
       const coords = position.coords;
-      if (!coords || coords.latitude === 0 || coords.longitude === 0) {
-        errorHandler?.("Invalid GPS coordinates.");
+      if (
+        !coords ||
+        coords.latitude === 0 ||
+        coords.longitude === 0 ||
+        typeof coords.latitude !== "number" ||
+        typeof coords.longitude !== "number" ||
+        isNaN(coords.latitude) ||
+        isNaN(coords.longitude)
+      ) {
+        errorHandler?.("Invalid GPS coordinates. Try stepping outside or retrying.");
         return;
       }
       callback(coords);
