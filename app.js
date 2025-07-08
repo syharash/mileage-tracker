@@ -117,7 +117,11 @@ function clearHistory() {
 }
 
 function downloadCSV() {
-  let csv = "Date,Miles,Reimbursement,Duration\n";
+   if (tripLog.length === 0) {
+    showToast("📂 No trips to export", "default");
+    return;
+  }
+ let csv = "Date,Miles,Reimbursement,Duration\n";
   tripLog.forEach(trip => {
     csv += `${trip.date},${trip.miles},${trip.reimbursement},${trip.duration}\n`;
   });
