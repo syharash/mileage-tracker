@@ -1,10 +1,16 @@
-let tracking = false;
 let tripStart = null;
 let tripEnd = null;
 let tripLog = [];
 
-const apiKey = "AIzaSyCbJgUNmcagzbSGb6QB3vWGvtbq3sUuPns"; // Replace with your actual key
+const apiKey = "AIzaSyCbJgUNmcagzbSGb6QB3vWGvtbq3sUuPns"; // Replace with your actual Google API key
 
+// Helper function to show notifications
+function showToast(message, type = "default") {
+  // Simple alert for demo; replace with custom toast UI if desired
+  alert(message);
+}
+
+// Start tracking: get initial position
 function startTracking() {
   navigator.geolocation.getCurrentPosition(
     (pos) => {
@@ -16,20 +22,23 @@ function startTracking() {
       tracking = true;
       showToast("🚀 Trip started!", "default");
     },
-    () => showToast("⚠️ Unable to access GPS", "default")
+    () => showToast("⚠ Unable to access GPS", "default")
   );
 }
 
+// Pause tracking
 function pauseTracking() {
   tracking = false;
-  showToast("⏸️ Tracking paused", "default");
+  showToast("⏸ Tracking paused", "default");
 }
 
+// Resume tracking
 function resumeTracking() {
   tracking = true;
-  showToast("▶️ Tracking resumed", "default");
+  showToast("▶ Tracking resumed", "default");
 }
 
+// End trip, calculate distance, fetch route info, and log
 async function endTracking() {
   if (!tracking || !tripStart) {
     showToast("❌ Trip not started", "default");
@@ -44,132 +53,93 @@ async function endTracking() {
     };
 
     try {
+      // Calculate driving distance in miles
       const distance = await getDrivingDistance(tripStart, tripEnd);
-
+      // Fetch route details from Google Directions API
       const route = await fetchRouteData(tripStart, tripEnd);
       const leg = route.routes[0].legs[0];
-      const duration = Math.round(leg.duration.value / 60);
+      const durationMinutes = Math.round(leg.duration.value / 60);
       const startAddress = leg.start_address;
       const endAddress = leg.end_address;
 
+      // Update UI elements
       document.getElementById("summary-start").textContent = startAddress;
       document.getElementById("summary-end").textContent = endAddress;
-      document.getElementById("summary-distance").textContent = `${distance.toFixed(2)} mi`;
-      document.getElementById("summary-duration").textContent = `${duration} min`;
+      document.getElementById("summary-distance").textContent = ${distance.toFixed(2)} mi;
+      document.getElementById("summary-duration").textContent = ${durationMinutes} min;
 
-      showToast(`✅ Trip complete: ${distance.toFixed(2)} mi to ${endAddress}`, "default");
+      showToast(✅ Trip complete: ${distance.toFixed(2)} mi to ${endAddress}, "default");
       document.getElementById("trip-summary").scrollIntoView({ behavior: "smooth" });
 
-      logTrip(distance, duration);
+      // Log trip details
+      logTrip(distance, durationMinutes);
+      
+      // Reset tracking state
+      tracking = false;
+      tripStart = null;
+      tripEnd = null;
     } catch (err) {
-      showToast("❌ Error calculating distance: " + err.message, "default");
+      showToast("❌ Error: " + err.message, "default");
     }
-
-    tracking = false;
-    tripStart = null;
-    tripEnd = null;
-  });
+  }, () => showToast("⚠ Unable to access GPS", "default"));
 }
 
-function logTrip(distance, duration) {
-  const rate = parseFloat(document.getElementById("rate").value);
-  const amount = distance * rate;
-
-  const tripEntry = {
-    date: new Date().toLocaleString(),
-    miles: distance.toFixed(2),
-    reimbursement: `$${amount.toFixed(2)}`,
-    duration: `${duration} min`,
-  };
-
-  tripLog.push(tripEntry);
-
-  const li = document.createElement("li");
-  li.textContent = `${tripEntry.date}: ${tripEntry.miles} mi, ${tripEntry.reimbursement}`;
-  document.getElementById("trip-log").appendChild(li);
-
-  updateSummary();
-}
-
-function updateSummary() {
-  let todayMiles = 0, weekMiles = 0;
-  const today = new Date().toDateString();
-  const weekAgo = new Date(Date.now() - 604800000);
-
-  for (let trip of tripLog) {
-    const tripDate = new Date(trip.date);
-    const miles = parseFloat(trip.miles);
-
-    if (tripDate.toDateString() === today) todayMiles += miles;
-    if (tripDate >= weekAgo) weekMiles += miles;
-  }
-
-  const rate = parseFloat(document.getElementById("rate").value);
-  document.getElementById("today-summary").textContent = `${todayMiles.toFixed(2)} mi | $${(todayMiles * rate).toFixed(2)}`;
-  document.getElementById("week-summary").textContent = `${weekMiles.toFixed(2)} mi | $${(weekMiles * rate).toFixed(2)}`;
-}
-
-function clearHistory() {
-  tripLog = [];
-  document.getElementById("trip-log").innerHTML = "";
-  updateSummary();
-  showToast("🧹 Trip history cleared", "default");
-}
-
-function downloadCSV() {
-   if (tripLog.length === 0) {
-    showToast("📂 No trips to export", "default");
-    return;
-  }
- let csv = "Date,Miles,Reimbursement,Duration\n";
-  tripLog.forEach(trip => {
-    csv += `${trip.date},${trip.miles},${trip.reimbursement},${trip.duration}\n`;
-  });
-
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "mileage_log.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function toggleHelp() {
-  const help = document.getElementById("help-screen");
-  help.style.display = help.style.display === "none" ? "block" : "none";
-}
-
-function showToast(message, type) {
-  const toast = document.getElementById("toast");
-  toast.textContent = message;
-  toast.className = "show";
-  setTimeout(() => toast.className = toast.className.replace("show", ""), 3000);
-}
-
+// Function to get driving distance using Google Distance Matrix API
 async function getDrivingDistance(start, end) {
-  if (
-    !start || !end ||
-    !start.latitude || !start.longitude ||
-    !end.latitude || !end.longitude
-  ) throw new Error("Missing or invalid GPS coordinates.");
+  const url = https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${start.latitude},${start.longitude}&destinations=${end.latitude},${end.longitude}&key=${apiKey};
 
-  console.log("📍 Fetching route from:", start, "to:", end);
-
-  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&mode=driving&key=${apiKey}`;
-
-  const response = await fetch(url);
-  if (!response.ok) throw new Error("Network error");
-
+  // For CORS issues, you might need a proxy like cors-anywhere or server-side calls
+  const response = await fetch(https://cors-anywhere.herokuapp.com/${url});
   const data = await response.json();
-  if (data.status !== "OK") throw new Error("Directions API error: " + data.status);
 
-  const meters = data.routes[0].legs[0].distance.value;
-  return meters / 1609.34;
+  if (data.status !== "OK") {
+    throw new Error("Distance API error: " + data.status);
+  }
+
+  const element = data.rows[0].elements[0];
+  if (element.status !== "OK") {
+    throw new Error("Distance calculation error: " + element.status);
+  }
+
+  // Convert meters to miles
+  return element.distance.value / 1609.34;
 }
 
+// Function to fetch route data using Google Directions API
 async function fetchRouteData(start, end) {
-  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&mode=driving&key=${apiKey}`;
-  const response = await fetch(url);
-  return await response.json();
+  const url = https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&key=${apiKey};
+
+  // Handle CORS
+  const response = await fetch(https://cors-anywhere.herokuapp.com/${url});
+  const data = await response.json();
+
+  if (data.status !== "OK") {
+    throw new Error("Directions API error: " + data.status);
+  }
+
+  return data;
 }
+
+// Function to log trip details
+function logTrip(distance, duration) {
+  tripLog.push({
+    startTime: new Date(tripStart.timestamp).toLocaleString(),
+    endTime: new Date(tripEnd.timestamp).toLocaleString(),
+    distance: distance.toFixed(2),
+    duration: duration,
+  });
+  console.log("Trip logged:", tripLog[tripLog.length - 1]);
+}
+
+// Example buttons in HTML to trigger functions
+// <button onclick="startTracking()">Start Trip</button>
+// <button onclick="pauseTracking()">Pause</button>
+// <button onclick="resumeTracking()">Resume</button>
+// <button onclick="endTracking()">End Trip</button>
+
+// Make sure your HTML has the following elements
+// <div id="summary-start"></div>
+// <div id="summary-end"></div>
+// <div id="summary-distance"></div>
+// <div id="summary-duration"></div>
+// <div id="trip-summary"></div>
