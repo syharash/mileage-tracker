@@ -125,6 +125,7 @@ function resumeTracking() {
 async function endTracking() {
   if (!startCoords) {
     alert("Resume trip before ending.");
+    console.log("Ending trip with:", coords.latitude, coords.longitude);
     return;
   }
 
@@ -152,6 +153,11 @@ async function endTracking() {
       alert("Error calculating distance: " + err.message);
     }
   }, msg => alert("End failed: " + msg));
+}
+
+if (!navigator.onLine) {
+  showToast("📡 You're offline. Connect to internet before ending trip.", "default");
+  throw new Error("Offline mode: Cannot fetch Directions.");
 }
 
 async function getDrivingDistance(start, end) {
