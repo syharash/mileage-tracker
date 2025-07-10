@@ -46,11 +46,43 @@ function resumeTracking() {
   tracking = true;
   showToast("▶️ Tracking resumed", "default");
 }
+function updateStatus(state) {
+  const el = document.getElementById("tracking-status");
+  el.textContent = state;
+  if (state === "Tracking") {
+    document.body.classList.remove("paused");
+  } else if (state === "Paused") {
+    document.body.classList.add("paused");
+  } else {
+    document.body.classList.remove("paused");
+  }
+}
+let pauseStartTime, totalPauseDuration = 0;
 
+function pauseTracking() {
+  tracking = false;
+  pauseStartTime = Date.now();
+  showToast("⏸️ Trip paused.", "default");
+  updateStatus("Paused");
+}
+
+function resumeTracking() {
+  tracking = true;
+  if (pauseStartTime) {
+    totalPauseDuration += Date.now() - pauseStartTime;
+    pauseStartTime = null;
+  }
+  showToast("▶️ Trip resumed.", "default");
+  updateStatus("Tracking");
+}
 async function endTracking() {
   if (!tracking || !tripStart) {
     showToast("❌ Trip not started", "error");
     return;
+    if (!tracking) {
+  showToast("⚠️ Trip is paused. Resume before ending.", "error");
+  return;
+}
   }
 
   navigator.geolocation.getCurrentPosition(async pos => {
