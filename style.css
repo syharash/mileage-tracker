@@ -126,7 +126,21 @@ button:hover {
   visibility: visible;
   opacity: 1;
 }
+#tracking-status::after {
+  content: " •";
+  color: green;
+  animation: pulse 1s infinite;
+}
 
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.paused #tracking-status::after {
+  color: orange;
+  animation: none;
+}
 @media (max-width: 600px) {
   .container { margin: 1rem; }
   button { flex: 1 1 100%; }
