@@ -259,8 +259,7 @@ function updateStatus(state) {
 
 // GPS fallback detector
  function startMotionMonitor() {
-  gpsPoller = setInterval() =>
- };
+  gpsPoller = setInterval() =>};
 
 window.onload = function () {
   // Initialize the map
