@@ -337,20 +337,49 @@ function startMotionMonitor() {
 // resumeTrackingBtn.disabled = !isPaused;  // Enabled only when paused
 // endTrackingBtn.disabled = !(isTracking || isPaused); // Enabled when active or paused
 
-  function updateControls() {
-  const isTracking = tracking && trackingInterval;
-  const isPaused = tracking && !trackingInterval;
+  // function updateControls() {
+  // const isTracking = tracking && trackingInterval;
+  // const isPaused = tracking && !trackingInterval;
 
-  document.getElementById("startTrackingBtn").disabled = tracking;
-  document.getElementById("pauseTrackingBtn").disabled = !isTracking;
-  document.getElementById("resumeTrackingBtn").disabled = !isPaused;
-  document.getElementById("endTrackingBtn").disabled = !tracking;
+  // document.getElementById("startTrackingBtn").disabled = tracking;
+  // document.getElementById("pauseTrackingBtn").disabled = !isTracking;
+  // document.getElementById("resumeTrackingBtn").disabled = !isPaused;
+  // document.getElementById("endTrackingBtn").disabled = !tracking;
 
   // Optional: reset focus to Start Trip after completion
+  // if (!tracking) {
+  //  document.getElementById("startTrackingBtn").focus();
+  // }
+// }
+
+function updateControls() {
+  const startTrackingBtn = document.getElementById("startTrackingBtn");
+  const pauseTrackingBtn = document.getElementById("pauseTrackingBtn");
+  const resumeTrackingBtn = document.getElementById("resumeTrackingBtn");
+  const endTrackingBtn = document.getElementById("endTrackingBtn");
+
   if (!tracking) {
-    document.getElementById("startTrackingBtn").focus();
+    // Trip is idle or has just ended
+    startTrackingBtn.disabled = false;
+    pauseTrackingBtn.disabled = true;
+    resumeTrackingBtn.disabled = true;
+    endTrackingBtn.disabled = true;
+  } else if (tracking && trackingInterval) {
+    // Actively tracking (GPS polling running)
+    startTrackingBtn.disabled = true;
+    pauseTrackingBtn.disabled = true;    // 🔴 Was incorrect before — FIX:
+    pauseTrackingBtn.disabled = false;   // ✅ ENABLE Pause
+    resumeTrackingBtn.disabled = true;
+    endTrackingBtn.disabled = false;
+  } else if (tracking && !trackingInterval) {
+    // Trip is paused (GPS polling stopped)
+    startTrackingBtn.disabled = true;
+    pauseTrackingBtn.disabled = true;
+    resumeTrackingBtn.disabled = false;
+    endTrackingBtn.disabled = false;
   }
 }
+
 
 // --- On Load ---
 window.onload = function () {
