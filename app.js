@@ -11,6 +11,18 @@ const fallbackInterval = 60000;
 const motionThreshold = 0.1;
 const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI";
 
+function initMap() {
+  const map = new google.maps.Map(document.getElementById("map"), {
+    center: { lat: 38.58, lng: -121.49 },
+    zoom: 12,
+  });
+
+  // 👉 Add any other map setup logic here:
+  // - Marker placement
+  // - Geolocation
+  // - Direction services
+}
+
 function safeUpdate(id, value) {
   const el = document.getElementById(id);
   if (el) {
