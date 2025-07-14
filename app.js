@@ -41,32 +41,115 @@ function startTracking() {
 function pauseTracking() {
   tracking = false;
   pauseStartTime = Date.now();
+
   updateStatus("Paused");
   showToast("⏸️ Trip paused");
-  startMotionMonitor();
+
+  // Adjust control states
+  document.getElementById("pause-btn").disabled = true;
+  document.getElementById("resume-btn").disabled = false;
+  document.getElementById("start-btn").disabled = true;
+  document.getElementById("end-btn").disabled = true;
+
+  startMotionMonitor(); // Optional: to auto-resume on movement
   updateControls();
 }
 
+
 function resumeTracking() {
   tracking = true;
-  clearInterval(gpsPoller);
+  clearInterval(gpsPoller); // Resume GPS polling
+
   if (pauseStartTime) {
     totalPauseDuration += Date.now() - pauseStartTime;
     pauseStartTime = null;
   }
+
   updateStatus("Tracking");
   showToast("▶️ Trip resumed");
+
+  // Restore tracking controls
+  document.getElementById("pause-btn").disabled = false;
+  document.getElementById("resume-btn").disabled = true;
+  document.getElementById("start-btn").disabled = true;
+  document.getElementById("end-btn").disabled = false;
+
   updateControls();
 }
 
+
 function endTracking() {
   clearInterval(gpsPoller);
+
   if (!tracking || !tripStart) {
     updateStatus("Idle");
     showToast("❌ Trip not started or currently paused", "error");
+
+    // Reset controls to safe defaults
+    document.getElementById("start-btn").disabled = false;
+    document.getElementById("pause-btn").disabled = true;
+    document.getElementById("resume-btn").disabled = true;
+    document.getElementById("end-btn").disabled = true;
     updateControls();
     return;
   }
+
+  navigator.geolocation.getCurrentPosition(async pos => {
+    tripEnd = {
+      latitude: pos.coords.latitude,
+      longitude: pos.coords.longitude,
+      timestamp: Date.now()
+    };
+
+    try {
+      initMapServices();
+      const result = await getRoute(tripStart, tripEnd);
+      const leg = result.routes[0].legs[0];
+
+      const distanceMi = (leg.distance.value / 1609.34).toFixed(2);
+      const durationMin = Math.round(leg.duration.value / 60);
+      const pausedMin = Math.round(totalPauseDuration / 60000);
+      const startAddress = leg.start_address;
+      const endAddress = leg.end_address;
+      const purpose = document.getElementById("trip-purpose").value || "–";
+      const notes = document.getElementById("trip-notes").value || "–";
+
+      // Log and store data
+      tripLog.push({
+        startAddress,
+        endAddress,
+        distanceMi,
+        durationMin,
+        pausedMin,
+        purpose,
+        notes,
+        timestamp: Date.now()
+      });
+
+      localStorage.setItem("lastRoute", JSON.stringify(result));
+
+      showToast(`🛑 Trip ended. Distance: ${distanceMi} mi, Duration: ${durationMin} min`);
+
+    } catch (err) {
+      console.error("Failed to fetch route:", err);
+      showToast("🚫 Could not finalize route", "error");
+    }
+
+    updateStatus("Idle");
+
+    // Reset control states
+    document.getElementById("start-btn").disabled = false;
+    document.getElementById("pause-btn").disabled = true;
+    document.getElementById("resume-btn").disabled = true;
+    document.getElementById("end-btn").disabled = true;
+
+    updateControls();
+  }, () => {
+    showToast("⚠️ GPS access failed", "error");
+    updateStatus("Idle");
+  });
+}
+
 
   navigator.geolocation.getCurrentPosition(async pos => {
     tripEnd = {
