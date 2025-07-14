@@ -23,6 +23,7 @@
       <label for="trip-purpose">Purpose / Client:</label>
       <input type="text" id="trip-purpose" placeholder="e.g. Site visit" />
     </div>
+
     <div class="field-group">
       <label for="trip-notes">Notes:</label>
       <textarea id="trip-notes" rows="2" placeholder="Any observations…"></textarea>
@@ -31,26 +32,29 @@
     <label for="rate">Reimbursement Rate ($/mi):</label>
     <input type="number" id="rate" value="0.655" step="0.001" />
 
+    <!-- Action Buttons -->
     <div class="button-group">
-      <button onclick="startTracking()">Start Trip</button>
-      <button onclick="pauseTracking()">Pause Trip</button>
-      <button onclick="resumeTracking()">Resume Trip</button>
-      <button onclick="endTracking()">End Trip</button>
-      <button onclick="downloadCSV()">Download CSV</button>
-      <button onclick="clearHistory()">Clear History</button>
-      <button onclick="toggleHelp()">Help</button>
+      <button id="startTrip">Start Trip</button>
+      <button id="pauseTrip" disabled>Pause Trip</button>
+      <button id="resumeTrip" disabled>Resume Trip</button>
+      <button id="endTrip" disabled>End Trip</button>
+      <button id="downloadCSV">Download CSV</button>
+      <button id="clearHistory">Clear History</button>
+      <button id="toggleHelp">Help</button>
     </div>
 
+    <!-- Trip Log -->
     <h3>Trip Log 📍</h3>
     <ul id="trip-log"></ul>
 
+    <!-- Summary -->
     <h3>Summary 🧾</h3>
     <p><strong>Today:</strong> <span id="today-summary">0 mi | $0.00</span></p>
     <p><strong>This Week:</strong> <span id="week-summary">0 mi | $0.00</span></p>
 
     <div id="trip-summary">
       <h4>🧭 Last Trip Summary</h4>
-      <p><strong>Status:</strong><span id="tracking-status">Idle</span></p>
+      <p><strong>Status:</strong> <span id="tracking-status">Idle</span></p>
       <p><strong>Purpose:</strong> <span id="summary-purpose">–</span></p>
       <p><strong>Notes:</strong> <span id="summary-notes">–</span></p>
       <p><strong>Start:</strong> <span id="summary-start">–</span></p>
@@ -60,10 +64,11 @@
       <p><strong>Paused Time:</strong> <span id="pause-summary">0 min</span></p>
     </div>
 
-    <!-- Map + turn-by-turn -->
+    <!-- Map & Directions -->
     <div id="map"></div>
     <div id="directions-panel"></div>
 
+    <!-- Help -->
     <div id="help-screen" style="display:none;">
       <h3>📘 Help Guide</h3>
       <p>1. Fill in purpose & notes.</p>
@@ -73,6 +78,7 @@
       <p>5. Export CSV or clear history.</p>
     </div>
 
+    <!-- Toast Message Container -->
     <div id="toast"></div>
   </div>
 
