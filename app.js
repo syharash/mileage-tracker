@@ -367,7 +367,6 @@ function updateControls() {
   } else if (tracking && trackingInterval) {
     // Actively tracking (GPS polling running)
     startTrackingBtn.disabled = true;
-    pauseTrackingBtn.disabled = true;    // 🔴 Was incorrect before — FIX:
     pauseTrackingBtn.disabled = false;   // ✅ ENABLE Pause
     resumeTrackingBtn.disabled = true;
     endTrackingBtn.disabled = false;
