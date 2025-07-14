@@ -113,7 +113,7 @@ function resumeTracking() {
   document.getElementById("startTrackingBtn").disabled = true;
   document.getElementById("endTrackingBtn").disabled = false; // ✅ keep this enabled!
 
-  startMotionMonitor();
+  updateControls();
 }
 
 function endTracking() {
