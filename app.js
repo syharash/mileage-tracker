@@ -32,31 +32,31 @@ function safeUpdate(id, value) {
   }
 }
 function updateControls() {
-  const startBtn = document.getElementById("startTrackingBtn");
-  const pauseBtn = document.getElementById("pauseTrackingBtn");
-  const resumeBtn = document.getElementById("resumeTrackingBtn");
-  const endBtn = document.getElementById("endTrackingBtn");
+  const startTrackingBtn = document.getElementById("startTrackingBtn");
+  const pauseTrackingBtn = document.getElementById("pauseTrackingBtn");
+  const resumeTrackingBtn = document.getElementById("resumeTrackingBtn");
+  const endTrackingBtn = document.getElementById("endTrackingBtn");
 
   switch (tripState) {
     case "idle":
-      startBtn.disabled = false;
-      pauseBtn.disabled = true;
-      resumeBtn.disabled = true;
-      endBtn.disabled = true;
+      startTrackingBtn.disabled = false;
+      pauseTrackingBtn.disabled = true;
+      resumeTrackingBtn.disabled = true;
+      endTrackingBtn.disabled = true;
       break;
 
     case "tracking":
-      startBtn.disabled = true;
-      pauseBtn.disabled = false;
-      resumeBtn.disabled = true;
-      endBtn.disabled = false;
+      startTrackingBtn.disabled = true;
+      pauseTrackingBtn.disabled = false;
+      resumeTrackingBtn.disabled = true;
+      endTrackingBtn.disabled = false;
       break;
 
     case "paused":
-      startBtn.disabled = true;
-      pauseBtn.disabled = true;
-      resumeBtn.disabled = false;
-      endBtn.disabled = false;
+      startTrackingBtn.disabled = true;
+      pauseTrackingBtn.disabled = true;
+      resumeTrackingBtn.disabled = false;
+      endTrackingBtn.disabled = false;
       break;
   }
 }
@@ -180,5 +180,3 @@ function endTracking() {
     updateStatus("Trip Complete");
   });
 }
-
-
