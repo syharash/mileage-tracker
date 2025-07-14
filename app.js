@@ -22,6 +22,56 @@ function initMapServices() {
   });
 }
 
+async function getRoute(start, end) {
+    // Validate input objects
+    if (!start || !end) {
+        console.warn("Missing start or end location:", { start, end });
+        alert("Route calculation failed: Missing location data.");
+        return;
+    }
+
+    // Validate coordinate properties
+    if (
+        typeof start.latitude !== "number" || typeof start.longitude !== "number" ||
+        typeof end.latitude !== "number" || typeof end.longitude !== "number"
+    ) {
+        console.warn("Invalid coordinates detected:", { start, end });
+        alert("Route calculation failed: Invalid coordinates received.");
+        return;
+    }
+
+    try {
+        // Show loading indicator or status message here (optional)
+
+        const directionsService = new google.maps.DirectionsService();
+        const result = await new Promise((resolve, reject) => {
+            directionsService.route(
+                {
+                    origin: new google.maps.LatLng(start.latitude, start.longitude),
+                    destination: new google.maps.LatLng(end.latitude, end.longitude),
+                    travelMode: google.maps.TravelMode.DRIVING,
+                },
+                (response, status) => {
+                    if (status === google.maps.DirectionsStatus.OK) {
+                        resolve(response);
+                    } else {
+                        reject(`Directions request failed due to ${status}`);
+                    }
+                }
+            );
+        });
+
+        // Handle and render route result here
+        console.log("Route result:", result);
+        return result;
+
+    } catch (error) {
+        console.error("Route calculation error:", error);
+        alert("Unable to calculate route. Please try again later.");
+    }
+}
+
+
 function startTracking() {
   initMapServices();
   navigator.geolocation.getCurrentPosition(pos => {
