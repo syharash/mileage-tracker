@@ -320,7 +320,7 @@ function updateControls() {
     // Actively tracking (GPS polling running)
     startTrackingBtn.disabled = true;
     pauseTrackingBtn.disabled = false;   // ✅ ENABLE Pause
-    resumeTrackingBtn.disabled = true;
+    resumeTrackingBtn.disabled = false;
     endTrackingBtn.disabled = false;
   } else if (tracking && !trackingInterval) {
     // Trip is paused (GPS polling stopped)
