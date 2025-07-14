@@ -299,15 +299,21 @@ function startMotionMonitor() {
 }
 
 function updateControls() {
+  const startTrackingBtn = document.getElementById("startTrackingBtn");
   const pauseTrackingBtn = document.getElementById("pauseTrackingBtn");
   const resumeTrackingBtn = document.getElementById("resumeTrackingBtn");
   const endTrackingBtn = document.getElementById("endTrackingBtn");
 
-  const isActive = tracking && tripStart;
-  if (pauseTrackingBtn) pauseTrackingBtn.disabled = !isActive;
-  if (resumeTrackingBtn) resumeTrackingBtn.disabled = !isActive;
-  if (endTrackingBtn) endTrackingBtn.disabled = !isActive;
+  const isTracking = tracking && tripStart;
+  const isPaused = !tracking && tripStart;
+
+  // ✅ Enable Start Tracking only when there is no active trip
+startTrackingBtn.disabled = !!tripStart; // Enabled when no trip underway
+pauseTrackingBtn.disabled = !isTracking; // Enabled only during active trip
+resumeTrackingBtn.disabled = !isPaused;  // Enabled only when paused
+endTrackingBtn.disabled = !(isTracking || isPaused); // Enabled when active or paused
 }
+
 
 // --- On Load ---
 window.onload = function () {
