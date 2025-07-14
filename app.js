@@ -7,6 +7,10 @@ let totalPauseDuration = 0;
 let directionsRenderer = new google.maps.DirectionsRenderer();
 let tripState = "idle"; // idle | tracking | paused
 
+const fallbackInterval = 60000;
+const motionThreshold = 0.1;
+const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI";
+
 function safeUpdate(id, value) {
   const el = document.getElementById(id);
   if (el) {
