@@ -36,6 +36,7 @@ function startTracking() {
     totalPauseDuration = 0;
     updateStatus("Tracking");
     showToast("🚀 Trip started!");
+    updateControls();
   }, () => showToast("⚠️ Unable to access GPS", "error"));
 }
 
@@ -46,6 +47,7 @@ function pauseTracking() {
   updateStatus("Paused");
   showToast("⏸️ Trip paused");
   startMotionMonitor();
+  updateControls();
 }
 
 // Resume
@@ -58,6 +60,7 @@ function resumeTracking() {
   }
   updateStatus("Tracking");
   showToast("▶️ Trip resumed");
+  updateContorls();
 }
 
 // End Trip
@@ -66,6 +69,7 @@ function endTracking() {
   if (!tracking || !tripStart) {
     updateStatus("Idle");
     showToast("❌ Trip not started or currently paused", "error");
+    updateControls();
     return;
   }
 
@@ -247,9 +251,21 @@ function startMotionMonitor() {
   }, fallbackInterval);
 }
 
+function updateControls() {
+  const pauseBtn = document.getElementById("pauseTrip");
+  const resumeBtn = document.getElementById("resumeTrip");
+  const endBtn = document.getElementById("endTrip");
+
+  const isActive = tracking && tripStart;
+
+  pauseBtn.disabled = !isActive;
+  resumeBtn.disabled = !isActive;
+  endBtn.disabled = !isActive;
+}
 window.onload = function () {
   initMapServices();
   updateStatus("Idle");
+  upControls(); //Initial button state
 
   // Explicit event bindings for buttons
   document.querySelector("button[onclick='startTracking()']").onclick = startTracking;
@@ -270,6 +286,14 @@ window.onload = function () {
   }
 
   // Reset directions panel
+  if (directionsRenderer) {
+    directionsRenderer.setDirections({ routes: [] });
+    document.getElementById("directions-panel").innerHTML = "";
+  }
+
+  // Reset UI
+  document.getElementById("trip-purpose").value = "";
+  document.getElementById("trip-notes").value = "";
   if (directionsRenderer) {
     directionsRenderer.setDirections({ routes: [] });
     document.getElementById("directions-panel").innerHTML = "";
