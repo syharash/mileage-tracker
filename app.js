@@ -36,7 +36,7 @@ function startTracking() {
     totalPauseDuration = 0;
     updateStatus("Tracking");
     showToast("🚀 Trip started!");
-    updateControls();
+    updateControls()
   }, () => showToast("⚠️ Unable to access GPS", "error"));
 }
 
@@ -47,7 +47,7 @@ function pauseTracking() {
   updateStatus("Paused");
   showToast("⏸️ Trip paused");
   startMotionMonitor();
-  updateControls();
+  updateControls()
 }
 
 // Resume
@@ -60,7 +60,7 @@ function resumeTracking() {
   }
   updateStatus("Tracking");
   showToast("▶️ Trip resumed");
-  updateContorls();
+  updateContorls()
 }
 
 // End Trip
