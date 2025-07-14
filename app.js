@@ -1,19 +1,12 @@
-// == Mileage Tracker – Clean & Consolidated ==
 let tracking = false;
 let trackingInterval = null;
 let tripStart = null;
 let tripEnd = null;
-let tripLog = [];
 let pauseStartTime = null;
 let totalPauseDuration = 0;
-let map, directionsService, directionsRenderer;
-let gpsPoller = null;
+let directionsRenderer = new google.maps.DirectionsRenderer();
+let tripState = "idle"; // idle | tracking | paused
 
-const fallbackInterval = 60000;
-const motionThreshold = 0.1;
-const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI";
-
-// --- Helper ---
 function safeUpdate(id, value) {
   const el = document.getElementById(id);
   if (el) {
@@ -22,130 +15,83 @@ function safeUpdate(id, value) {
     console.warn(`⚠️ Element with ID "${id}" not found`);
   }
 }
+function updateControls() {
+  const startBtn = document.getElementById("startTrackingBtn");
+  const pauseBtn = document.getElementById("pauseTrackingBtn");
+  const resumeBtn = document.getElementById("resumeTrackingBtn");
+  const endBtn = document.getElementById("endTrackingBtn");
 
-// --- INIT ---
-function initMapServices() {
-  if (map) return;
-  map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 38.5816, lng: -121.4944 },
-    zoom: 12
-  });
-  directionsService = new google.maps.DirectionsService();
-  directionsRenderer = new google.maps.DirectionsRenderer({
-    map,
-    panel: document.getElementById("directions-panel")
-  });
-}
+  switch (tripState) {
+    case "idle":
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      resumeBtn.disabled = true;
+      endBtn.disabled = true;
+      break;
 
-// --- Route Calculation ---
-async function getRoute(start, end) {
-  if (!start || !end) {
-    console.warn("Missing start or end location:", { start, end });
-    alert("Route calculation failed: Missing location data.");
-    return;
-  }
-  if (
-    typeof start.latitude !== "number" || typeof start.longitude !== "number" ||
-    typeof end.latitude !== "number" || typeof end.longitude !== "number"
-  ) {
-    console.warn("Invalid coordinates:", { start, end });
-    alert("Route calculation failed: Invalid coordinates.");
-    return;
-  }
+    case "tracking":
+      startBtn.disabled = true;
+      pauseBtn.disabled = false;
+      resumeBtn.disabled = true;
+      endBtn.disabled = false;
+      break;
 
-  try {
-    const result = await new Promise((resolve, reject) => {
-      directionsService.route(
-        {
-          origin: new google.maps.LatLng(start.latitude, start.longitude),
-          destination: new google.maps.LatLng(end.latitude, end.longitude),
-          travelMode: google.maps.TravelMode.DRIVING
-        },
-        (response, status) => {
-          status === google.maps.DirectionsStatus.OK
-            ? resolve(response)
-            : reject(`Route request failed: ${status}`);
-        }
-      );
-    });
-    return result;
-  } catch (error) {
-    console.error("Route calculation error:", error);
-    alert("Unable to calculate route. Please try again later.");
+    case "paused":
+      startBtn.disabled = true;
+      pauseBtn.disabled = true;
+      resumeBtn.disabled = false;
+      endBtn.disabled = false;
+      break;
   }
 }
-
-// --- Tracking Lifecycle ---
 function startTracking() {
-  initMapServices();
   navigator.geolocation.getCurrentPosition(pos => {
     tripStart = {
       latitude: pos.coords.latitude,
       longitude: pos.coords.longitude,
       timestamp: Date.now()
     };
+
     tracking = true;
-    totalPauseDuration = 0;
+    tripState = "tracking";
+    trackingInterval = setInterval(() => {
+      // polling logic
+    }, 10000);
+
     updateStatus("Tracking");
-    showToast("🚀 Trip started!");
+    showToast("🚗 Trip started");
     updateControls();
-  }, () => showToast("⚠️ Unable to access GPS", "error"));
+  }, () => {
+    showToast("⚠️ GPS access failed", "error");
+  });
 }
 
-//function pauseTracking() {
-//  tracking = false;
-//  pauseStartTime = Date.now();
-//  updateStatus("Paused");
-//  showToast("⏸️ Trip paused");
-
-  // Manually set states — don't call updateControls()
-  //document.getElementById("pauseTrackingBtn").disabled = true;
-  //document.getElementById("resumeTrackingBtn").disabled = false;
-  //document.getElementById("startTrackingBtn").disabled = true;
-  //document.getElementById("endTrackingBtn").disabled = false; // ✅ keep this enabled!
-
-  //startMotionMonitor();
-//}
-//function resumeTracking() {
-//  tracking = true;
-//  clearInterval(gpsPoller);
-//  if (pauseStartTime) {
-//    totalPauseDuration += Date.now() - pauseStartTime;
-//    pauseStartTime = null;
-//  }
-//  updateStatus("Tracking");
-//  showToast("▶️ Trip resumed");
- // Manually set states — don't call updateControls()
-  //document.getElementById("pauseTrackingBtn").disabled = false;
-  //document.getElementById("resumeTrackingBtn").disabled = true;
-  //document.getElementById("startTrackingBtn").disabled = true;
-  //document.getElementById("endTrackingBtn").disabled = false; // ✅ keep this enabled!
-
-  //updateControls();
-//}
-
 function pauseTracking() {
-  // ✅ keep tracking = true
   clearInterval(trackingInterval);
   trackingInterval = null;
   pauseStartTime = Date.now();
+  tripState = "paused";
   updateStatus("Paused");
   showToast("⏸️ Trip paused");
   updateControls();
 }
+
 function resumeTracking() {
-// ✅ keep tracking = true and resume trip
   trackingInterval = setInterval(() => {
-    // poll location again
-  }, 10000); // or your preferred interval
+    // polling logic
+  }, 10000);
+
   if (pauseStartTime) {
     totalPauseDuration += Date.now() - pauseStartTime;
     pauseStartTime = null;
   }
+
+  tripState = "tracking";
   updateStatus("Tracking");
   showToast("▶️ Trip resumed");
   updateControls();
 }
+
 function endTracking() {
   navigator.geolocation.getCurrentPosition(async pos => {
     tripEnd = {
@@ -176,21 +122,9 @@ function endTracking() {
         const pausedMin = Math.round(totalPauseDuration / 60000);
         const startAddress = leg.start_address;
         const endAddress = leg.end_address;
-        const purpose = document.getElementById("trip-purpose").value || "–";
-        const notes = document.getElementById("trip-notes").value || "–";
+        const purpose = document.getElementById("trip-purpose")?.value || "–";
+        const notes = document.getElementById("trip-notes")?.value || "–";
 
-       // document.getElementById("summary-purpose").textContent = purpose;
-       // document.getElementById("summary-notes").textContent = notes;
-       // document.getElementById("summary-start").textContent = startAddress;
-       // document.getElementById("summary-end").textContent = endAddress;
-       // document.getElementById("summary-distance").textContent = `${distanceMi} mi`;
-       // document.getElementById("summary-duration").textContent = `${durationMin} min`;
-       // document.getElementById("pause-summary").textContent = `${pausedMin} min`;
-
-       // document.getElementById("lastDistance").textContent = `${distanceMi} mi`;
-       // document.getElementById("lastDuration").textContent = `${durationMin} min`;
-
-        // 🧾 Robust UI updates
         safeUpdate("summary-purpose", purpose);
         safeUpdate("summary-notes", notes);
         safeUpdate("summary-start", startAddress);
@@ -221,217 +155,14 @@ function endTracking() {
       }
     }
 
+    tripState = "idle";
+    tripStart = tripEnd = null;
     updateStatus("Trip Complete");
     updateControls();
-    tripStart = tripEnd = null;
   }, () => {
     showToast("⚠️ GPS access failed", "error");
     updateStatus("Trip Complete");
   });
 }
 
-// --- Helpers ---
-function renderSteps(steps) {
-  const panel = document.getElementById("directions-panel");
-  panel.innerHTML = "";
-  const iconMap = {
-    "turn-left": "⬅️",
-    "turn-right": "➡️",
-    "merge": "🔀",
-    "ramp-right": "↪️",
-    "ramp-left": "↩️"
-  };
-  steps.forEach(step => {
-    const div = document.createElement("div");
-    const icon = iconMap[step.maneuver] || "➡️";
-    div.innerHTML = `${icon} ${step.html_instructions}`;
-    panel.appendChild(div);
-  });
-}
 
-function logTrip(purpose, notes, distance, duration, paused) {
-  const rate = parseFloat(document.getElementById("rate").value || "0");
-  const reimbursement = (distance * rate).toFixed(2);
-  const entry = {
-    date: new Date().toLocaleString(),
-    purpose,
-    notes,
-    miles: distance,
-    duration: `${duration} min`,
-    paused: `${paused} min`,
-    reimbursement: `$${reimbursement}`
-  };
-  tripLog.push(entry);
-
-  const li = document.createElement("li");
-  li.textContent = `${entry.date} | ${entry.purpose} | ${entry.miles} mi | ${entry.reimbursement}`;
-  document.getElementById("trip-log").appendChild(li);
-  updateSummary();
-}
-
-function updateSummary() {
-  let today = 0, week = 0;
-  const todayDate = new Date().toDateString();
-  const weekAgo = Date.now() - 7 * 24 * 3600 * 1000;
-  const rate = parseFloat(document.getElementById("rate").value || "0");
-
-  tripLog.forEach(t => {
-    const d = new Date(t.date);
-    const m = parseFloat(t.miles);
-    if (d.toDateString() === todayDate) today += m;
-    if (d.getTime() >= weekAgo) week += m;
-  });
-
-  document.getElementById("today-summary").textContent = `${today.toFixed(2)} mi | $${(today * rate).toFixed(2)}`;
-  document.getElementById("today-summary").textContent = `${today.toFixed(2)} mi | $${(today * rate).toFixed(2)}`;
-  document.getElementById("week-summary").textContent = `${week.toFixed(2)} mi | $${(week * rate).toFixed(2)}`;
-}
-
-function downloadCSV() {
-  if (!tripLog.length) return showToast("📂 No trips to export");
-  let csv = "Date,Purpose,Notes,Miles,Duration,Paused,Reimbursement\n";
-  tripLog.forEach(t => {
-    csv += `${t.date},${t.purpose},${t.notes},${t.miles},${t.duration},${t.paused},${t.reimbursement}\n`;
-  });
-  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "mileage_log.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function clearHistory() {
-  tripLog = [];
-  document.getElementById("trip-log").innerHTML = "";
-  updateSummary();
-  showToast("🧹 Trip history cleared");
-}
-
-function toggleHelp() {
-  const h = document.getElementById("help-screen");
-  h.style.display = h.style.display === "none" ? "block" : "none";
-}
-
-function showToast(msg, type = "default") {
-  const t = document.getElementById("toast");
-  if (!t) {
-    console.warn("🚨 Toast element not found.");
-    return;
-  }
-  t.textContent = msg;
-  t.className = "show";
-  t.style.backgroundColor = type === "error" ? "#B00020" : "#222";
-  setTimeout(() => t.className = "", 3000);
-}
-
-function updateStatus(state) {
-  const el = document.getElementById("tracking-status");
-  if (el) el.textContent = state;
-  document.body.classList.toggle("paused", state === "Paused");
-  document.body.classList.toggle("ended", state === "Ended" || state === "Trip Complete");
-}
-
-function startMotionMonitor() {
-  gpsPoller = setInterval(() => {
-    // Optional fallback tracking logic could go here
-  }, fallbackInterval);
-}
-
-// function updateControls() {
-//  const startTrackingBtn = document.getElementById("startTrackingBtn");
-//  const pauseTrackingBtn = document.getElementById("pauseTrackingBtn");
-//  const resumeTrackingBtn = document.getElementById("resumeTrackingBtn");
-// const endTrackingBtn = document.getElementById("endTrackingBtn");
-
-//  const isTracking = tracking && tripStart;
-//  const isPaused = !tracking && tripStart;
-
-  //const isTracking = tracking && trackingInterval;
-  //const isPaused = tracking && !trackingInterval;
-
-  // ✅ Enable Start Tracking only when there is no active trip
-// startTrackingBtn.disabled = !!tripStart; // Enabled when no trip underway
-// pauseTrackingBtn.disabled = !isTracking; // Enabled only during active trip
-// resumeTrackingBtn.disabled = !isPaused;  // Enabled only when paused
-// endTrackingBtn.disabled = !(isTracking || isPaused); // Enabled when active or paused
-
-  // function updateControls() {
-  // const isTracking = tracking && trackingInterval;
-  // const isPaused = tracking && !trackingInterval;
-
-  // document.getElementById("startTrackingBtn").disabled = tracking;
-  // document.getElementById("pauseTrackingBtn").disabled = !isTracking;
-  // document.getElementById("resumeTrackingBtn").disabled = !isPaused;
-  // document.getElementById("endTrackingBtn").disabled = !tracking;
-
-  // Optional: reset focus to Start Trip after completion
-  // if (!tracking) {
-  //  document.getElementById("startTrackingBtn").focus();
-  // }
-// }
-
-function updateControls() {
-  const startTrackingBtn = document.getElementById("startTrackingBtn");
-  const pauseTrackingBtn = document.getElementById("pauseTrackingBtn");
-  const resumeTrackingBtn = document.getElementById("resumeTrackingBtn");
-  const endTrackingBtn = document.getElementById("endTrackingBtn");
-
-  if (!tracking) {
-    // Trip is idle or has just ended
-    startTrackingBtn.disabled = false;
-    pauseTrackingBtn.disabled = true;
-    resumeTrackingBtn.disabled = true;
-    endTrackingBtn.disabled = true;
-  } else if (tracking && trackingInterval) {
-    // Actively tracking (GPS polling running)
-    startTrackingBtn.disabled = true;
-    pauseTrackingBtn.disabled = false;   // ✅ ENABLE Pause
-    resumeTrackingBtn.disabled = true;
-    endTrackingBtn.disabled = false;
-  } else if (tracking && !trackingInterval) {
-    // Trip is paused (GPS polling stopped)
-    startTrackingBtn.disabled = true;
-    pauseTrackingBtn.disabled = true;
-    resumeTrackingBtn.disabled = false;
-    endTrackingBtn.disabled = false;
-  }
-}
-
-
-// --- On Load ---
-window.onload = function () {
-  initMapServices();
-  updateStatus("Idle");
-  updateControls();
-
-  const buttonHandlers = {
-    startTrackingBtn: startTracking,
-    pauseTrackingBtn: pauseTracking,
-    resumeTrackingBtn: resumeTracking,
-    endTrackingBtn: endTracking,
-    downloadCSVBtn: downloadCSV,
-    clearHistoryBtn: clearHistory,
-    toggleHelpBtn: toggleHelp
-  };
-
-  for (const [id, handler] of Object.entries(buttonHandlers)) {
-    const el = document.getElementById(id);
-    if (el) el.onclick = handler;
-    else console.warn(`🔍 Missing button with ID: ${id}`);
-  }
-
-  document.getElementById("trip-purpose").value = "";
-  document.getElementById("trip-notes").value = "";
-
-  if (!document.getElementById("toast")) {
-    console.warn("🚨 Toast element not found.");
-  }
-
-  if (directionsRenderer) {
-    directionsRenderer.setDirections({ routes: [] });
-    const panel = document.getElementById("directions-panel");
-    if (panel) panel.innerHTML = "";
-  }
-};
