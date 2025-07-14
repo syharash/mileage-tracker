@@ -87,15 +87,16 @@ function pauseTracking() {
   pauseStartTime = Date.now();
   updateStatus("Paused");
   showToast("⏸️ Trip paused");
- // Adjust control states
+
+  // Manually set states — don't call updateControls()
   document.getElementById("pauseTrackingBtn").disabled = true;
   document.getElementById("resumeTrackingBtn").disabled = false;
   document.getElementById("startTrackingBtn").disabled = true;
-  document.getElementById("endTrackingBtn").disabled = true;
+  document.getElementById("endTrackingBtn").disabled = false; // ✅ keep this enabled!
 
-  updateControls();
   startMotionMonitor();
 }
+
 
 function resumeTracking() {
   tracking = true;
@@ -106,13 +107,13 @@ function resumeTracking() {
   }
   updateStatus("Tracking");
   showToast("▶️ Trip resumed");
- // Restore tracking controls
+ // Manually set states — don't call updateControls()
   document.getElementById("pauseTrackingBtn").disabled = false;
   document.getElementById("resumeTrackingBtn").disabled = true;
   document.getElementById("startTrackingBtn").disabled = true;
-  document.getElementById("endTrackingBtn").disabled = false;
+  document.getElementById("endTrackingBtn").disabled = false; // ✅ keep this enabled!
 
-  updateControls();
+  startMotionMonitor();
 }
 
 function endTracking() {
