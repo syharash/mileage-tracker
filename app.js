@@ -248,9 +248,9 @@ function updateStatus(state) {
   } else if (state === "Paused") {
     document.body.classList.add("paused");
     document.body.classList.remove("ended");
- // } else if (state === "Ended" || state === "Trip Complete") {
- // document.body.classList.remove("paused");
- //   document.body.classList.add("ended");
+  } else if (state === "Ended" || state === "Trip Complete") {
+    document.body.classList.remove("paused");
+    document.body.classList.add("ended");
   } else {
     document.body.classList.remove("paused");
     document.body.classList.remove("ended");
@@ -286,7 +286,7 @@ window.onload = function () {
   if (directionsRenderer) {
     directionsRenderer.setDirections({ routes: [] });
     document.getElementById("directions-panel").innerHTML = "";
-    document.getElementById("trip-purpose").value = "";
-    document.getElementById("trip-notes").value = "";
+   // document.getElementById("trip-purpose").value = "";
+   // document.getElementById("trip-notes").value = "";
   }
 };
