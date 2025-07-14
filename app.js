@@ -88,7 +88,7 @@ function pauseTracking() {
   updateStatus("Paused");
   showToast("⏸️ Trip paused");
   document.getElementById("pauseTrackingBtn").disabled = true;
-  document.getElementById("resumeTrackingbtn").disabled = false;
+  document.getElementById("resumeTrackingBtn").disabled = false;
   updateControls();
   startMotionMonitor();
 }
@@ -103,7 +103,7 @@ function resumeTracking() {
   updateStatus("Tracking");
   showToast("▶️ Trip resumed");
   document.getElementById("pauseTrackingBtn").disabled = false;
-  document.getElementById("resumeTrackingbtn").disabled = true;
+  document.getElementById("resumeTrackingBtn").disabled = true;
   updateControls();
 }
 
@@ -291,7 +291,7 @@ function startMotionMonitor() {
 
 function updateControls() {
   const pauseTrackingBtn = document.getElementById("pauseTrackingBtn");
-  const resumeTrackingBtn = document.getElementById("resumeTrackingbtn");
+  const resumeTrackingBtn = document.getElementById("resumeTrackingBtn");
   const endTrackingBtn = document.getElementById("endTrackingBtn");
 
   const isActive = tracking && tripStart;
