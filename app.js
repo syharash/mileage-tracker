@@ -129,20 +129,43 @@ function resumeTracking() {
 
 
 function endTracking() {
-  clearInterval(gpsPoller);
+    if (!tripStart || !tripEnd) {
+        alert("Trip cannot be ended: Missing start or end location.");
+        console.warn("Missing start/end:", { tripStart, tripEnd });
+        return;
+    }
 
-  if (!tracking || !tripStart) {
-    updateStatus("Idle");
-    showToast("❌ Trip not started or currently paused", "error");
+    // Stop any ongoing timers or status updates
+    clearInterval(trackingInterval);
+    trackingInterval = null;
+    tripActive = false;
 
-    // Reset controls to safe defaults
-    document.getElementById("startTrackingbtn").disabled = false;
-    document.getElementById("pauseTrackingBtn").disabled = true;
-    document.getElementById("resumeTrackingbtn").disabled = true;
-    document.getElementById("endTrackingbtn").disabled = true;
-    updateControls();
-    return;
-  }
+    // Attempt route calculation
+    getRoute(tripStart, tripEnd).then((routeResult) => {
+        if (routeResult) {
+            directionsRenderer.setDirections(routeResult);
+
+            // Optionally store or display route details
+            const leg = routeResult.routes[0].legs[0];
+            const distanceInMiles = leg.distance.value / 1609.34; // meters to miles
+            const durationInMin = leg.duration.value / 60; // seconds to minutes
+
+            console.log("Distance:", distanceInMiles, "miles");
+            console.log("Duration:", durationInMin, "min");
+
+            document.getElementById("lastDistance").textContent = `${distanceInMiles.toFixed(2)} mi`;
+            document.getElementById("lastDuration").textContent = `${durationInMin.toFixed(1)} min`;
+        } else {
+            console.warn("No route result returned.");
+        }
+    }).catch((error) => {
+        console.error("Route calc failed in endTracking:", error);
+    });
+
+    // Optional: Update status
+    document.getElementById("status").textContent = "Trip Complete";
+}
+
 
   navigator.geolocation.getCurrentPosition(async pos => {
     tripEnd = {
