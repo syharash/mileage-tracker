@@ -265,7 +265,7 @@ function updateControls() {
 window.onload = function () {
   initMapServices();
   updateStatus("Idle");
-  upControls(); //Initial button state
+  updateControls(); //Initial button state
 
   // Explicit event bindings for buttons
   document.querySelector("button[onclick='startTracking()']").onclick = startTracking;
