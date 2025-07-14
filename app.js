@@ -92,40 +92,60 @@ function startTracking() {
   }, () => showToast("⚠️ Unable to access GPS", "error"));
 }
 
+//function pauseTracking() {
+//  tracking = false;
+//  pauseStartTime = Date.now();
+//  updateStatus("Paused");
+//  showToast("⏸️ Trip paused");
+
+  // Manually set states — don't call updateControls()
+  //document.getElementById("pauseTrackingBtn").disabled = true;
+  //document.getElementById("resumeTrackingBtn").disabled = false;
+  //document.getElementById("startTrackingBtn").disabled = true;
+  //document.getElementById("endTrackingBtn").disabled = false; // ✅ keep this enabled!
+
+  //startMotionMonitor();
+//}
+//function resumeTracking() {
+//  tracking = true;
+//  clearInterval(gpsPoller);
+//  if (pauseStartTime) {
+//    totalPauseDuration += Date.now() - pauseStartTime;
+//    pauseStartTime = null;
+//  }
+//  updateStatus("Tracking");
+//  showToast("▶️ Trip resumed");
+ // Manually set states — don't call updateControls()
+  //document.getElementById("pauseTrackingBtn").disabled = false;
+  //document.getElementById("resumeTrackingBtn").disabled = true;
+  //document.getElementById("startTrackingBtn").disabled = true;
+  //document.getElementById("endTrackingBtn").disabled = false; // ✅ keep this enabled!
+
+  //updateControls();
+//}
+
 function pauseTracking() {
-  tracking = false;
+  // ✅ keep tracking = true
+  clearInterval(trackingInterval);
+  trackingInterval = null;
   pauseStartTime = Date.now();
   updateStatus("Paused");
   showToast("⏸️ Trip paused");
-
-  // Manually set states — don't call updateControls()
-  document.getElementById("pauseTrackingBtn").disabled = true;
-  document.getElementById("resumeTrackingBtn").disabled = false;
-  document.getElementById("startTrackingBtn").disabled = true;
-  document.getElementById("endTrackingBtn").disabled = false; // ✅ keep this enabled!
-
-  startMotionMonitor();
+  updateControls();
 }
-
-
 function resumeTracking() {
-  tracking = true;
-  clearInterval(gpsPoller);
+// ✅ keep tracking = true and resume trip
+  trackingInterval = setInterval(() => {
+    // poll location again
+  }, 10000); // or your preferred interval
   if (pauseStartTime) {
     totalPauseDuration += Date.now() - pauseStartTime;
     pauseStartTime = null;
   }
   updateStatus("Tracking");
   showToast("▶️ Trip resumed");
- // Manually set states — don't call updateControls()
-  document.getElementById("pauseTrackingBtn").disabled = false;
-  document.getElementById("resumeTrackingBtn").disabled = true;
-  document.getElementById("startTrackingBtn").disabled = true;
-  document.getElementById("endTrackingBtn").disabled = false; // ✅ keep this enabled!
-
   updateControls();
 }
-
 function endTracking() {
   navigator.geolocation.getCurrentPosition(async pos => {
     tripEnd = {
