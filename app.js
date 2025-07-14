@@ -46,10 +46,10 @@ function pauseTracking() {
   showToast("⏸️ Trip paused");
 
   // Adjust control states
-  document.getElementById("pause-btn").disabled = true;
-  document.getElementById("resume-btn").disabled = false;
-  document.getElementById("start-btn").disabled = true;
-  document.getElementById("end-btn").disabled = true;
+  document.getElementById("pauseTrackingBtn").disabled = true;
+  document.getElementById("resumeTrackingbtn").disabled = false;
+  document.getElementById("startTrackingbtn").disabled = true;
+  document.getElementById("endTrackingbtn").disabled = true;
 
   startMotionMonitor(); // Optional: to auto-resume on movement
   updateControls();
@@ -69,10 +69,10 @@ function resumeTracking() {
   showToast("▶️ Trip resumed");
 
   // Restore tracking controls
-  document.getElementById("pause-btn").disabled = false;
-  document.getElementById("resume-btn").disabled = true;
-  document.getElementById("start-btn").disabled = true;
-  document.getElementById("end-btn").disabled = false;
+  document.getElementById("pauseTrackingBtn").disabled = false;
+  document.getElementById("resumeTrackingbtn").disabled = true;
+  document.getElementById("startTrackingbtn").disabled = true;
+  document.getElementById("endTrackingbtn").disabled = false;
 
   updateControls();
 }
@@ -86,10 +86,10 @@ function endTracking() {
     showToast("❌ Trip not started or currently paused", "error");
 
     // Reset controls to safe defaults
-    document.getElementById("start-btn").disabled = false;
-    document.getElementById("pause-btn").disabled = true;
-    document.getElementById("resume-btn").disabled = true;
-    document.getElementById("end-btn").disabled = true;
+    document.getElementById("startTrackingbtn").disabled = false;
+    document.getElementById("pauseTrackingBtn").disabled = true;
+    document.getElementById("resumeTrackingbtn").disabled = true;
+    document.getElementById("endTrackingbtn").disabled = true;
     updateControls();
     return;
   }
@@ -138,10 +138,10 @@ function endTracking() {
     updateStatus("Idle");
 
     // Reset control states
-    document.getElementById("start-btn").disabled = false;
-    document.getElementById("pause-btn").disabled = true;
-    document.getElementById("resume-btn").disabled = true;
-    document.getElementById("end-btn").disabled = true;
+    document.getElementById("startTrackingbtn").disabled = false;
+    document.getElementById("pauseTrackingbtn").disabled = true;
+    document.getElementById("resumeTrackingbtn").disabled = true;
+    document.getElementById("endTrackingbtn").disabled = true;
 
     updateControls();
   }, () => {
