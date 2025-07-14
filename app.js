@@ -203,7 +203,7 @@ function endTracking() {
 
     tracking = false;
     tripStart = tripEnd = null;
-  );}
+  ]);
 
 function getRoute(start, end) {
   return new Promise((resolve, reject) => {
