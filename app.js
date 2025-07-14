@@ -268,13 +268,13 @@ window.onload = function () {
   updateControls(); //Initial button state
 
   // Explicit event bindings for buttons
-  document.querySelector("button[onclick='startTracking()']").onclick = startTracking;
-  document.querySelector("button[onclick='pauseTracking()']").onclick = pauseTracking;
-  document.querySelector("button[onclick='resumeTracking()']").onclick = resumeTracking;
-  document.querySelector("button[onclick='endTracking()']").onclick = endTracking;
-  document.querySelector("button[onclick='downloadCSV()']").onclick = downloadCSV;
-  document.querySelector("button[onclick='clearHistory()']").onclick = clearHistory;
-  document.querySelector("button[onclick='toggleHelp()']").onclick = toggleHelp;
+  document.getElementById("button[onclick='startTracking()']").onclick = startTracking;
+  document.getElementById("button[onclick='pauseTracking()']").onclick = pauseTracking;
+  document.getElementById("button[onclick='resumeTracking()']").onclick = resumeTracking;
+  document.getElementById("button[onclick='endTracking()']").onclick = endTracking;
+  document.getElementById("button[onclick='downloadCSV()']").onclick = downloadCSV;
+  document.getElementById("button[onclick='clearHistory()']").onclick = clearHistory;
+  document.getElementById("button[onclick='toggleHelp()']").onclick = toggleHelp;
 
   // Clear previous trip notes (optional UI reset)
   document.getElementById("trip-purpose").value = "";
