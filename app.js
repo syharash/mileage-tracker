@@ -92,37 +92,6 @@ function startTracking() {
   }, () => showToast("⚠️ Unable to access GPS", "error"));
 }
 
-//function pauseTracking() {
-//  tracking = false;
-//  pauseStartTime = Date.now();
-//  updateStatus("Paused");
-//  showToast("⏸️ Trip paused");
-
-  // Manually set states — don't call updateControls()
-  //document.getElementById("pauseTrackingBtn").disabled = true;
-  //document.getElementById("resumeTrackingBtn").disabled = false;
-  //document.getElementById("startTrackingBtn").disabled = true;
-  //document.getElementById("endTrackingBtn").disabled = false; // ✅ keep this enabled!
-
-  //startMotionMonitor();
-//}
-//function resumeTracking() {
-//  tracking = true;
-//  clearInterval(gpsPoller);
-//  if (pauseStartTime) {
-//    totalPauseDuration += Date.now() - pauseStartTime;
-//    pauseStartTime = null;
-//  }
-//  updateStatus("Tracking");
-//  showToast("▶️ Trip resumed");
- // Manually set states — don't call updateControls()
-  //document.getElementById("pauseTrackingBtn").disabled = false;
-  //document.getElementById("resumeTrackingBtn").disabled = true;
-  //document.getElementById("startTrackingBtn").disabled = true;
-  //document.getElementById("endTrackingBtn").disabled = false; // ✅ keep this enabled!
-
-  //updateControls();
-//}
 
 function pauseTracking() {
   // ✅ keep tracking = true
@@ -179,18 +148,7 @@ function endTracking() {
         const purpose = document.getElementById("trip-purpose").value || "–";
         const notes = document.getElementById("trip-notes").value || "–";
 
-       // document.getElementById("summary-purpose").textContent = purpose;
-       // document.getElementById("summary-notes").textContent = notes;
-       // document.getElementById("summary-start").textContent = startAddress;
-       // document.getElementById("summary-end").textContent = endAddress;
-       // document.getElementById("summary-distance").textContent = `${distanceMi} mi`;
-       // document.getElementById("summary-duration").textContent = `${durationMin} min`;
-       // document.getElementById("pause-summary").textContent = `${pausedMin} min`;
-
-       // document.getElementById("lastDistance").textContent = `${distanceMi} mi`;
-       // document.getElementById("lastDuration").textContent = `${durationMin} min`;
-
-        // 🧾 Robust UI updates
+ // 🧾 Robust UI updates
         safeUpdate("summary-purpose", purpose);
         safeUpdate("summary-notes", notes);
         safeUpdate("summary-start", startAddress);
@@ -339,38 +297,6 @@ function startMotionMonitor() {
   }, fallbackInterval);
 }
 
-// function updateControls() {
-//  const startTrackingBtn = document.getElementById("startTrackingBtn");
-//  const pauseTrackingBtn = document.getElementById("pauseTrackingBtn");
-//  const resumeTrackingBtn = document.getElementById("resumeTrackingBtn");
-// const endTrackingBtn = document.getElementById("endTrackingBtn");
-
-//  const isTracking = tracking && tripStart;
-//  const isPaused = !tracking && tripStart;
-
-  //const isTracking = tracking && trackingInterval;
-  //const isPaused = tracking && !trackingInterval;
-
-  // ✅ Enable Start Tracking only when there is no active trip
-// startTrackingBtn.disabled = !!tripStart; // Enabled when no trip underway
-// pauseTrackingBtn.disabled = !isTracking; // Enabled only during active trip
-// resumeTrackingBtn.disabled = !isPaused;  // Enabled only when paused
-// endTrackingBtn.disabled = !(isTracking || isPaused); // Enabled when active or paused
-
-  // function updateControls() {
-  // const isTracking = tracking && trackingInterval;
-  // const isPaused = tracking && !trackingInterval;
-
-  // document.getElementById("startTrackingBtn").disabled = tracking;
-  // document.getElementById("pauseTrackingBtn").disabled = !isTracking;
-  // document.getElementById("resumeTrackingBtn").disabled = !isPaused;
-  // document.getElementById("endTrackingBtn").disabled = !tracking;
-
-  // Optional: reset focus to Start Trip after completion
-  // if (!tracking) {
-  //  document.getElementById("startTrackingBtn").focus();
-  // }
-// }
 
 function updateControls() {
   const startTrackingBtn = document.getElementById("startTrackingBtn");
@@ -384,6 +310,12 @@ function updateControls() {
     pauseTrackingBtn.disabled = true;
     resumeTrackingBtn.disabled = true;
     endTrackingBtn.disabled = true;
+  } else if (tracking) {
+    // Trip has started and Trip can be Paused
+    startTrackingBtn.disabled = true;
+    pauseTrackingBtn.disabled = false;
+    resumeTrackingBtn.disabled = true;
+    endTrackingBtn.disabled = false;
   } else if (tracking && trackingInterval) {
     // Actively tracking (GPS polling running)
     startTrackingBtn.disabled = true;
