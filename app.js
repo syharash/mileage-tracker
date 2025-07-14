@@ -13,6 +13,16 @@ const fallbackInterval = 60000;
 const motionThreshold = 0.1;
 const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI";
 
+// --- Helper ---
+function safeUpdate(id, value) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.textContent = value;
+  } else {
+    console.warn(`⚠️ Element with ID "${id}" not found`);
+  }
+}
+
 // --- INIT ---
 function initMapServices() {
   if (map) return;
@@ -149,16 +159,27 @@ function endTracking() {
         const purpose = document.getElementById("trip-purpose").value || "–";
         const notes = document.getElementById("trip-notes").value || "–";
 
-        document.getElementById("summary-purpose").textContent = purpose;
-        document.getElementById("summary-notes").textContent = notes;
-        document.getElementById("summary-start").textContent = startAddress;
-        document.getElementById("summary-end").textContent = endAddress;
-        document.getElementById("summary-distance").textContent = `${distanceMi} mi`;
-        document.getElementById("summary-duration").textContent = `${durationMin} min`;
-        document.getElementById("pause-summary").textContent = `${pausedMin} min`;
+       // document.getElementById("summary-purpose").textContent = purpose;
+       // document.getElementById("summary-notes").textContent = notes;
+       // document.getElementById("summary-start").textContent = startAddress;
+       // document.getElementById("summary-end").textContent = endAddress;
+       // document.getElementById("summary-distance").textContent = `${distanceMi} mi`;
+       // document.getElementById("summary-duration").textContent = `${durationMin} min`;
+       // document.getElementById("pause-summary").textContent = `${pausedMin} min`;
 
-        document.getElementById("lastDistance").textContent = `${distanceMi} mi`;
-        document.getElementById("lastDuration").textContent = `${durationMin} min`;
+       // document.getElementById("lastDistance").textContent = `${distanceMi} mi`;
+       // document.getElementById("lastDuration").textContent = `${durationMin} min`;
+
+        // 🧾 Robust UI updates
+        safeUpdate("summary-purpose", purpose);
+        safeUpdate("summary-notes", notes);
+        safeUpdate("summary-start", startAddress);
+        safeUpdate("summary-end", endAddress);
+        safeUpdate("summary-distance", `${distanceMi} mi`);
+        safeUpdate("summary-duration", `${durationMin} min`);
+        safeUpdate("pause-summary", `${pausedMin} min`);
+        safeUpdate("lastDistance", `${distanceMi} mi`);
+        safeUpdate("lastDuration", `${durationMin} min`);
 
         renderSteps(leg.steps);
         logTrip(purpose, notes, distanceMi, durationMin, pausedMin);
