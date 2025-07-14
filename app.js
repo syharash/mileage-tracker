@@ -250,8 +250,8 @@ function updateStatus(state) {
 }
 
 // GPS fallback detector
-// function startMotionMonitor() {
-//  gpsPoller = setInterval(() => )};
+ function startMotionMonitor() {
+  gpsPoller = setInterval() => };
 
 window.onload = function () {
   // Initialize the map
