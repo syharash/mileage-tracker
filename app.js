@@ -252,9 +252,9 @@ function startMotionMonitor() {
 }
 
 function updateControls() {
-  const pauseBtn = document.getElementById("pauseTrip");
-  const resumeBtn = document.getElementById("resumeTrip");
-  const endBtn = document.getElementById("endTrip");
+  const pauseBtn = document.getElementById("pauseTracking");
+  const resumeBtn = document.getElementById("resumeTracking");
+  const endBtn = document.getElementById("endTracking");
 
   const isActive = tracking && tripStart;
 
