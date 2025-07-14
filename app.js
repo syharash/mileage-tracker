@@ -319,22 +319,38 @@ function startMotionMonitor() {
   }, fallbackInterval);
 }
 
-function updateControls() {
-  const startTrackingBtn = document.getElementById("startTrackingBtn");
-  const pauseTrackingBtn = document.getElementById("pauseTrackingBtn");
-  const resumeTrackingBtn = document.getElementById("resumeTrackingBtn");
-  const endTrackingBtn = document.getElementById("endTrackingBtn");
+// function updateControls() {
+//  const startTrackingBtn = document.getElementById("startTrackingBtn");
+//  const pauseTrackingBtn = document.getElementById("pauseTrackingBtn");
+//  const resumeTrackingBtn = document.getElementById("resumeTrackingBtn");
+// const endTrackingBtn = document.getElementById("endTrackingBtn");
 
-  const isTracking = tracking && tripStart;
-  const isPaused = !tracking && tripStart;
+//  const isTracking = tracking && tripStart;
+//  const isPaused = !tracking && tripStart;
+
+  //const isTracking = tracking && trackingInterval;
+  //const isPaused = tracking && !trackingInterval;
 
   // ✅ Enable Start Tracking only when there is no active trip
-startTrackingBtn.disabled = !!tripStart; // Enabled when no trip underway
-pauseTrackingBtn.disabled = !isTracking; // Enabled only during active trip
-resumeTrackingBtn.disabled = !isPaused;  // Enabled only when paused
-endTrackingBtn.disabled = !(isTracking || isPaused); // Enabled when active or paused
-}
+// startTrackingBtn.disabled = !!tripStart; // Enabled when no trip underway
+// pauseTrackingBtn.disabled = !isTracking; // Enabled only during active trip
+// resumeTrackingBtn.disabled = !isPaused;  // Enabled only when paused
+// endTrackingBtn.disabled = !(isTracking || isPaused); // Enabled when active or paused
 
+  function updateControls() {
+  const isTracking = tracking && trackingInterval;
+  const isPaused = tracking && !trackingInterval;
+
+  document.getElementById("startTrackingBtn").disabled = tracking;
+  document.getElementById("pauseTrackingBtn").disabled = !isTracking;
+  document.getElementById("resumeTrackingBtn").disabled = !isPaused;
+  document.getElementById("endTrackingBtn").disabled = !tracking;
+
+  // Optional: reset focus to Start Trip after completion
+  if (!tracking) {
+    document.getElementById("startTrackingBtn").focus();
+  }
+}
 
 // --- On Load ---
 window.onload = function () {
