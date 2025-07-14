@@ -252,3 +252,31 @@ function updateStatus(state) {
 // GPS fallback detector
 function startMotionMonitor() {
   gpsPoller = setInterval(() => {
+
+                          window.onload = function () {
+  // Initialize the map
+  initMapServices();
+
+  // Attach button event handlers explicitly
+  document.querySelector("button[onclick='startTracking()']").onclick = startTracking;
+  document.querySelector("button[onclick='pauseTracking()']").onclick = pauseTracking;
+  document.querySelector("button[onclick='resumeTracking()']").onclick = resumeTracking;
+  document.querySelector("button[onclick='endTracking()']").onclick = endTracking;
+  document.querySelector("button[onclick='downloadCSV()']").onclick = downloadCSV;
+  document.querySelector("button[onclick='clearHistory()']").onclick = clearHistory;
+  document.querySelector("button[onclick='toggleHelp()']").onclick = toggleHelp;
+
+  // Make sure toast element is accessible
+  if (!document.getElementById("toast")) {
+    console.warn("🚨 Toast element not found in DOM.");
+  }
+
+  // Update initial UI status
+  updateStatus("Idle");
+
+  // Optional: clear previous map directions
+  if (directionsRenderer) {
+    directionsRenderer.setDirections({ routes: [] });
+    document.getElementById("directions-panel").innerHTML = "";
+  }
+};
