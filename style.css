@@ -15,6 +15,12 @@ body {
   color: #333;
 }
 
+body.ended #tracking-status::after {
+  content: "🛑"; /* or a pulsing checkmark */
+  animation: none;
+  margin-left: 6px;
+}
+
 h2, h3, h4 {
   text-align: center;
   margin-bottom: 0.5rem;
