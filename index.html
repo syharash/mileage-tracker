@@ -8,6 +8,17 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
+  <script>
+  function initMap() {
+    const map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: 38.58, lng: -121.49 }, // Sacramento
+      zoom: 12,
+    });
+  }
+
+  // Expose it globally (necessary in some modern setups)
+  window.initMap = initMap;
+</script>
 
   <!-- Google Maps JavaScript API -->
   <script
