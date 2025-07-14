@@ -237,15 +237,15 @@ function startMotionMonitor() {
 }
 
 function updateControls() {
-  const pauseBtn = document.getElementById("pauseTrackingBtn");
-  const resumeBtn = document.getElementById("resumeTrackingBtn");
-  const endBtn = document.getElementById("endTrackingBtn");
+  const pauseTrackingBtn = document.getElementById("pauseTrackingBtn");
+  const resumeTrackingBtn = document.getElementById("resumeTrackingBtn");
+  const endTrackingBtn = document.getElementById("endTrackingBtn");
 
   const isActive = tracking && tripStart;
 
-  pauseBtn.disabled = !isActive;
-  resumeBtn.disabled = !isActive;
-  endBtn.disabled = !isActive;
+  pauseTrackingBtn.disabled = !isActive;
+  resumeTrackingBtn.disabled = !isActive;
+  endTrackingBtn.disabled = !isActive;
 }
 
 window.onload = function () {
