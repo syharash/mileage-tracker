@@ -398,4 +398,19 @@ window.onload = function () {
     const panel = document.getElementById("directions-panel");
     if (panel) panel.innerHTML = "";
   }
+
+  const enableDebugBtn = document.getElementById("enableDebugBtn");
+const debugBadge = document.getElementById("debugBadge");
+
+if (isDebug) {
+  // Hide the button, show the badge
+  enableDebugBtn.style.display = "none";
+  debugBadge.style.display = "inline-block";
+} else {
+  // Activate on click
+  enableDebugBtn.onclick = () => {
+    window.location.search = "debug=true";
+  };
+}
+
 };
