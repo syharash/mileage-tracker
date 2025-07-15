@@ -399,10 +399,10 @@ window.onload = function () {
     if (panel) panel.innerHTML = "";
   }
 
-  const enableDebugBtn = document.getElementById("enableDebugBtn");
-  const debugBadge = document.getElementById("debugBadge");
+const enableDebugBtn = document.getElementById("enableDebugBtn");
+const debugBadge = document.getElementById("debugBadge");
 
-  function updateDebugUI() {
+function updateDebugUI() {
   if (isDebug) {
     enableDebugBtn.textContent = "🛑 Disable Debug";
     debugBadge.style.display = "inline-block";
@@ -426,12 +426,9 @@ enableDebugBtn.onclick = () => {
       console.log("🛠️ Debug mode enabled via toggle");
     };
   } else if (!isDebug) {
-  if (typeof eruda !== "undefined" && typeof eruda.destroy === "function") {
-    eruda.destroy();
-    console.log("🔕 Debug mode disabled");
+    if (typeof eruda !== "undefined" && typeof eruda.destroy === "function") {
+      eruda.destroy();
+      console.log("🔕 Debug mode disabled");
+    }
   }
-};
-
-updateDebugUI();
-  
 };
