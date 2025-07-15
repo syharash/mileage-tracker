@@ -1,5 +1,6 @@
 // == Mileage Tracker – Clean & Consolidated ==
 let tracking = false;
+let tripStatus = 'idle';
 let trackingInterval = null;
 let tripStart = null;
 let tripEnd = null;
@@ -77,6 +78,7 @@ async function getRoute(start, end) {
 
 // --- Tracking Lifecycle ---
 function startTracking() {
+  tripStatus = 'tracking';
   initMapServices();
   navigator.geolocation.getCurrentPosition(pos => {
     tripStart = {
@@ -95,6 +97,7 @@ function startTracking() {
 
 function pauseTracking() {
   // ✅ keep tracking = true
+  tripStatus = 'paused';
   clearInterval(trackingInterval);
   trackingInterval = null;
   pauseStartTime = Date.now();
@@ -104,6 +107,7 @@ function pauseTracking() {
 }
 function resumeTracking() {
 // ✅ keep tracking = true and resume trip
+  tripStatus = 'resumed';
   trackingInterval = setInterval(() => {
     // poll location again
   }, 10000); // or your preferred interval
@@ -116,6 +120,7 @@ function resumeTracking() {
   updateControls();
 }
 function endTracking() {
+  tripStatus = 'idle';
   navigator.geolocation.getCurrentPosition(async pos => {
     tripEnd = {
       latitude: pos.coords.latitude,
@@ -304,8 +309,8 @@ function updateControls(status) {
   const resumeTrackingBtn = document.getElementById("resumeTrackingBtn");
   const endTrackingBtn = document.getElementById("endTrackingBtn");
 
-  if (status === 'tracking') {
-  // Trip is idle or ended
+  if (status === 'tracking' || status === 'resumed') {
+  // Trip is idle or ended or resumed
   startTrackingBtn.disabled = true;
   pauseTrackingBtn.disabled = false;
   resumeTrackingBtn.disabled = true;
@@ -316,12 +321,10 @@ function updateControls(status) {
   pauseTrackingBtn.disabled = true;
   resumeTrackingBtn.disabled = false;
   endTrackingBtn.disabled = false;
-} else if (status === 'idle') {
-  // Trip is paused
-  startTrackingBtn.disabled = false;
-  pauseTrackingBtn.disabled = true;
-  resumeTrackingBtn.disabled = true;
-  endTrackingBtn.disabled = true;
+} else {
+    pauseTrackingBtn.disabled = true;
+    resumeTrackingBtn.disabled = true;
+    endTrackingBtn.disabled = true;
 } 
 }
 
