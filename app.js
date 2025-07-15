@@ -66,6 +66,32 @@ const fallbackInterval = 60000;
 const motionThreshold = 0.1;
 const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI";
 
+// === DEBUG TOOLS: UI Toggle Logic ===
+
+document.addEventListener('DOMContentLoaded', () => {
+  const debugBtn = document.getElementById('enableDebugBtn');
+  const badge = document.getElementById('debugBadge');
+
+  if (debugBtn && badge) {
+    let debugActive = localStorage.getItem("debugMode") === "true";
+
+    // Initial UI sync
+    debugBtn.textContent = debugActive ? "🛑 Disable Debug" : "👀 Enable Debug";
+    badge.style.display = debugActive ? "inline-block" : "none";
+
+    // Activate debug state immediately on load if needed
+    toggleDebug(debugActive);
+
+    debugBtn.addEventListener('click', () => {
+      debugActive = !debugActive;
+      localStorage.setItem("debugMode", debugActive.toString());
+      toggleDebug(debugActive);
+      debugBtn.textContent = debugActive ? "🛑 Disable Debug" : "👀 Enable Debug";
+      badge.style.display = debugActive ? "inline-block" : "none";
+    });
+  }
+});
+
 
 // --- Helper ---
 function safeUpdate(id, value) {
