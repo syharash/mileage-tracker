@@ -425,14 +425,13 @@ enableDebugBtn.onclick = () => {
       eruda.init();
       console.log("🛠️ Debug mode enabled via toggle");
     };
-  } else if (!isDebug && typeof eruda !== "undefined") {
+  } else if (!isDebug) {
+  if (typeof eruda !== "undefined" && typeof eruda.destroy === "function") {
     eruda.destroy();
     console.log("🔕 Debug mode disabled");
   }
 };
 
 updateDebugUI();
-
-
-
+  
 };
