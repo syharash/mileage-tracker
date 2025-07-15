@@ -2,81 +2,101 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#2c2c2c" />
-  <title>Mileage Tracker</title>
-
-  <!-- PWA Setup -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mileage Tracker App</title>
   <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/png" href="icon-192.png" sizes="192x192" />
-  <link rel="apple-touch-icon" href="icon-512.png" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
-  <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-  <!-- Entry Point Script -->
-  <script type="module" src="index.js" defer></script>
+  <script>
+  function initMap() {
+    const map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: 38.58, lng: -121.49 }, // Sacramento
+      zoom: 12,
+    });
+  }
+
+  // Expose it globally (necessary in some modern setups)
+  window.initMap = initMap;
+</script>
+
+  <!-- Google Maps JavaScript API -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI&libraries=places&callback=initMap"
+    async
+    defer>
+  </script>
 </head>
 <body>
-  <header>
-    <h1>📍 Mileage Tracker</h1>
-    <div id="tracking-status">Idle</div>
-    <span id="debugBadge" class="badge">🛠 Debug ON</span>
-  </header>
+  <div class="container">
+    <h2>Mileage Tracker 🚗</h2>
 
-  <main>
-    <!-- Trip Controls -->
-    <section class="controls">
-      <button id="startTrackingBtn">Start Trip</button>
-      <button id="pauseTrackingBtn">Pause</button>
-      <button id="resumeTrackingBtn">Resume</button>
-      <button id="endTrackingBtn">End Trip</button>
-    </section>
+    <!-- Tagging & Notes -->
+    <div class="field-group">
+      <label for="trip-purpose">Purpose / Client:</label>
+      <input type="text" id="trip-purpose" placeholder="e.g. Site visit" />
+    </div>
 
-    <!-- Input Fields -->
-    <section class="inputs">
-      <input id="trip-purpose" type="text" placeholder="Purpose of trip" />
-      <textarea id="trip-notes" placeholder="Notes (optional)"></textarea>
-      <input id="rate" type="number" step="0.01" placeholder="Rate per mile ($)" />
-    </section>
+    <div class="field-group">
+      <label for="trip-notes">Notes:</label>
+      <textarea id="trip-notes" rows="2" placeholder="Any observations…"></textarea>
+    </div>
+
+    <label for="rate">Reimbursement Rate ($/mi):</label>
+    <input type="number" id="rate" value="0.655" step="0.001" />
+
+    <!-- Action Buttons -->
+    <div class="button-group">
+     <button id="startTrackingBtn">Start Trip</button>
+     <button id="pauseTrackingBtn" disabled>Pause Trip</button>
+     <button id="resumeTrackingBtn" disabled>Resume Trip</button>
+     <button id="endTrackingBtn" disabled>End Trip</button>
+     <button id="downloadCSVBtn">Download CSV</button>
+     <button id="clearHistoryBtn">Clear History</button>
+     <button id="toggleHelpBtn">Help</button>
+    </div>
+
+    <!-- Trip Log -->
+    <h3>Trip Log 📍</h3>
+    <ul id="trip-log"></ul>
 
     <!-- Summary -->
-    <section class="summary">
-      <h3>Trip Summary</h3>
-      <p>Purpose: <span id="summary-purpose">–</span></p>
-      <p>Notes: <span id="summary-notes">–</span></p>
-      <p>Start: <span id="summary-start">–</span></p>
-      <p>End: <span id="summary-end">–</span></p>
-      <p>Distance: <span id="summary-distance">–</span></p>
-      <p>Duration: <span id="summary-duration">–</span></p>
-      <p>Paused: <span id="pause-summary">–</span></p>
-    </section>
+    <h3>Summary 🧾</h3>
+    <p><strong>Today:</strong> <span id="today-summary">0 mi | $0.00</span></p>
+    <p><strong>This Week:</strong> <span id="week-summary">0 mi | $0.00</span></p>
 
-    <!-- Export & History -->
-    <section class="history">
-      <h3>Trip Log</h3>
-      <ul id="trip-log"></ul>
-      <button id="downloadCSVBtn">📂 Export CSV</button>
-      <button id="clearHistoryBtn">🧹 Clear History</button>
-    </section>
+    <div id="trip-summary">
+      <h4>🧭 Last Trip Summary</h4>
+      <p><strong>Status:</strong> <span id="tracking-status">Idle</span></p>
+      <p><strong>Purpose:</strong> <span id="summary-purpose">–</span></p>
+      <p><strong>Notes:</strong> <span id="summary-notes">–</span></p>
+      <p><strong>Start:</strong> <span id="summary-start">–</span></p>
+      <p><strong>End:</strong> <span id="summary-end">–</span></p>
+      <p><strong>Distance:</strong> <span id="summary-distance">0 mi</span></p>
+      <p><strong>Duration:</strong> <span id="summary-duration">–</span></p>
+      <p><strong>Paused Time:</strong> <span id="pause-summary">0 min</span></p>
+      <p><strong>Last Distance:</strong> <span id="lastDistance">–</span></p>
+      <p><strong>Last Duration:</strong> <span id="lastDuration">–</span></p>
+    </div>
 
-    <!-- Directions Panel -->
-    <section id="directions-panel"></section>
+    <!-- Map & Directions -->
+    <div id="map"></div>
+    <div id="directions-panel"></div>
 
-    <!-- Help & Debug -->
-    <section class="tools">
-      <button id="toggleHelpBtn">❓ Help</button>
-      <button id="enableDebugBtn">👀 Enable Debug</button>
-    </section>
+    <!-- Help -->
+    <div id="help-screen" style="display:none;">
+      <h3>📘 Help Guide</h3>
+      <p>1. Fill in purpose & notes.</p>
+      <p>2. Tap “Start Trip” to begin.</p>
+      <p>3. Pause/resume as needed.</p>
+      <p>4. Tap “End Trip” to finalize and view recap.</p>
+      <p>5. Export CSV or clear history.</p>
+    </div>
 
-    <section id="help-screen" style="display: none;">
-      <p>This app helps you track your mileage, calculate reimbursement, and log trip history. Enter your trip purpose and notes, then hit "Start Trip" to begin.</p>
-    </section>
+    <!-- Toast Message Container -->
+    <div id="toast"></div>
+  </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast"></div>
-  </main>
+  <script src="app.js"></script>
 </body>
 </html>
