@@ -13,6 +13,18 @@ let gpsPoller = null;
 const fallbackInterval = 60000;
 const motionThreshold = 0.1;
 const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI";
+const isDebug = window.location.search.includes("debug=true");
+
+if (isDebug) {
+  const script = document.createElement("script");
+  script.src = "//cdn.jsdelivr.net/npm/eruda";
+  document.body.appendChild(script);
+  script.onload = () => {
+    eruda.init();
+    console.log("🛠️ Eruda console enabled!");
+  };
+}
+
 
 // --- Helper ---
 function safeUpdate(id, value) {
@@ -86,6 +98,11 @@ function startTracking() {
       longitude: pos.coords.longitude,
       timestamp: Date.now()
     };
+    
+    if (isDebug) {
+    console.log("📍 Trip Start:", tripStart.latitude, tripStart.longitude);
+    }
+    
     tracking = true;
     totalPauseDuration = 0;
     updateStatus("Tracking");
@@ -127,7 +144,11 @@ function endTracking() {
       longitude: pos.coords.longitude,
       timestamp: Date.now()
     };
-
+    
+    if (isDebug) {
+    console.log("📍 Trip End:", tripEnd.latitude, tripEnd.longitude);
+    }
+    
     if (!tripStart || !tripEnd) {
       alert("Trip cannot be ended: Missing location data.");
       console.warn("Missing tripStart or tripEnd");
@@ -142,6 +163,11 @@ function endTracking() {
       const result = await getRoute(tripStart, tripEnd);
       if (result) {
         const leg = result.routes[0].legs[0];
+        
+        if (isDebug) {
+        console.log("🚗 Raw Distance from Directions API:", leg.distance.value, "meters");
+        }
+        
         directionsRenderer.setDirections(result);
         localStorage.setItem("lastRoute", JSON.stringify(result));
 
@@ -176,6 +202,7 @@ function endTracking() {
       if (cached) {
         const result = JSON.parse(cached);
         const leg = result.routes[0].legs[0];
+        console.log("🚗 Raw Distance from Directions API:", leg.distance.value, "meters");
         directionsRenderer.setDirections(result);
         renderSteps(leg.steps);
         showToast("⚠️ Offline: showing last saved route");
