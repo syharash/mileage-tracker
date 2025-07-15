@@ -1,65 +1,57 @@
-// log.js
-import { showToast } from './ui.js';
+// ui.js
 
-let tripLog = [];
-
-function logTrip(purpose, notes, distance, duration, paused) {
-  const rate = parseFloat(document.getElementById("rate").value || "0");
-  const reimbursement = (distance * rate).toFixed(2);
-  const entry = {
-    date: new Date().toLocaleString(),
-    purpose,
-    notes,
-    miles: distance,
-    duration: `${duration} min`,
-    paused: `${paused} min`,
-    reimbursement: `$${reimbursement}`
-  };
-  tripLog.push(entry);
-
-  const li = document.createElement("li");
-  li.textContent = `${entry.date} | ${entry.purpose} | ${entry.miles} mi | ${entry.reimbursement}`;
-  document.getElementById("trip-log").appendChild(li);
-  updateSummary();
+function updateStatus(state) {
+  const el = document.getElementById("tracking-status");
+  if (el) el.textContent = state;
+  document.body.classList.toggle("paused", state === "Paused");
+  document.body.classList.toggle("ended", state === "Ended" || state === "Trip Complete");
 }
 
-function updateSummary() {
-  let today = 0, week = 0;
-  const todayDate = new Date().toDateString();
-  const weekAgo = Date.now() - 7 * 24 * 3600 * 1000;
-  const rate = parseFloat(document.getElementById("rate").value || "0");
+function updateControls(tripStatus = 'idle') {
+  const startTrackingBtn = document.getElementById("startTrackingBtn");
+  const pauseTrackingBtn = document.getElementById("pauseTrackingBtn");
+  const resumeTrackingBtn = document.getElementById("resumeTrackingBtn");
+  const endTrackingBtn = document.getElementById("endTrackingBtn");
 
-  tripLog.forEach(t => {
-    const d = new Date(t.date);
-    const m = parseFloat(t.miles);
-    if (d.toDateString() === todayDate) today += m;
-    if (d.getTime() >= weekAgo) week += m;
-  });
+  if (!startTrackingBtn || !pauseTrackingBtn || !resumeTrackingBtn || !endTrackingBtn) {
+    console.warn("🔍 Some control buttons not found.");
+    return;
+  }
 
-  document.getElementById("today-summary").textContent = `${today.toFixed(2)} mi | $${(today * rate).toFixed(2)}`;
-  document.getElementById("week-summary").textContent = `${week.toFixed(2)} mi | $${(week * rate).toFixed(2)}`;
+  startTrackingBtn.disabled = tripStatus !== 'idle';
+  pauseTrackingBtn.disabled = !(tripStatus === 'tracking');
+  resumeTrackingBtn.disabled = !(tripStatus === 'paused');
+  endTrackingBtn.disabled = !(tripStatus === 'tracking' || tripStatus === 'paused' || tripStatus === 'resumed');
 }
 
-function downloadCSV() {
-  if (!tripLog.length) return showToast("📂 No trips to export");
-  let csv = "Date,Purpose,Notes,Miles,Duration,Paused,Reimbursement\n";
-  tripLog.forEach(t => {
-    csv += `${t.date},${t.purpose},${t.notes},${t.miles},${t.duration},${t.paused},${t.reimbursement}\n`;
-  });
-  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "mileage_log.csv";
-  a.click();
-  URL.revokeObjectURL(url);
+function showToast(msg, type = "default") {
+  const t = document.getElementById("toast");
+  if (!t) {
+    console.warn("🚨 Toast element not found.");
+    return;
+  }
+  t.textContent = msg;
+  t.className = "show";
+  t.style.backgroundColor = type === "error" ? "#B00020" : "#222";
+  setTimeout(() => t.className = "", 3000);
 }
 
-function clearHistory() {
-  tripLog = [];
-  document.getElementById("trip-log").innerHTML = "";
-  updateSummary();
-  showToast("🧹 Trip history cleared");
+function safeUpdate(id, value) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.textContent = value;
+  } else {
+    console.warn(`⚠️ Element with ID "${id}" not found`);
+  }
 }
 
-export { logTrip, updateSummary, downloadCSV, clearHistory };
+function toggleHelp() {
+  const h = document.getElementById("help-screen");
+  if (h) {
+    h.style.display = h.style.display === "none" ? "block" : "none";
+  } else {
+    console.warn("🆘 Help screen not found.");
+  }
+}
+
+export { updateStatus, updateControls, showToast, safeUpdate, toggleHelp };
