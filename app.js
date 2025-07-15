@@ -431,4 +431,5 @@ enableDebugBtn.onclick = () => {
       console.log("🔕 Debug mode disabled");
     }
   }
+}
 };
