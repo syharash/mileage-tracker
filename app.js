@@ -1,4 +1,7 @@
-// == Mileage Tracker – Clean & Consolidated ==
+// === GLOBAL CONFIG & STATE ===
+const fallbackInterval = 60000;
+const motionThreshold = 0.1;
+const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI";
 let tracking = false;
 let tripStatus = 'idle';
 let trackingInterval = null;
@@ -9,6 +12,8 @@ let pauseStartTime = null;
 let totalPauseDuration = 0;
 let map, directionsService, directionsRenderer;
 let gpsPoller = null;
+
+// === DEBUG MODE INIT ===
 let isDebug = localStorage.getItem("debugMode") === "true";
 
 if (isDebug) {
@@ -21,6 +26,7 @@ if (isDebug) {
   };
 }
 
+// === DEBUG TOOLS ===
 function toggleDebug(enable) {
     const erudaScriptId = 'eruda-script';
     const existingScript = document.getElementById(erudaScriptId);
@@ -62,9 +68,7 @@ function toggleDebug(enable) {
     }
 }
 
-const fallbackInterval = 60000;
-const motionThreshold = 0.1;
-const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI";
+
 
 // === DEBUG TOOLS: UI Toggle Logic ===
 
@@ -93,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// --- Helper ---
+// === HELPER FUNCTIONS ===
 function safeUpdate(id, value) {
   const el = document.getElementById(id);
   if (el) {
@@ -123,7 +127,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// --- INIT ---
+// === MAP INIT & SERVICES ===
+// initMapServices(), directions setup, fallback polling
+
 function initMapServices() {
   if (map) return;
   map = new google.maps.Map(document.getElementById("map"), {
@@ -137,7 +143,9 @@ function initMapServices() {
   });
 }
 
-// --- Route Calculation ---
+// === ROUTE CALCULATION ===
+// getRoute(start, end) async logic
+
 async function getRoute(start, end) {
   if (!start || !end) {
     console.warn("Missing start or end location:", { start, end });
@@ -175,7 +183,9 @@ async function getRoute(start, end) {
   }
 }
 
-// --- Tracking Lifecycle ---
+// === TRACKING CONTROLS ===
+// startTracking(), pauseTracking(), resumeTracking(), endTracking()
+
 function startTracking() {
   tripStatus = 'tracking';
   initMapServices();
@@ -198,6 +208,8 @@ function startTracking() {
   }, () => showToast("⚠️ Unable to access GPS", "error"));
 }
 
+// === UI DISPLAY & RENDER ===
+// renderSteps(), updateSummary(), updateStatus(), updateControls()
 
 function pauseTracking() {
   // ✅ keep tracking = true
@@ -266,7 +278,9 @@ function endTracking() {
         const purpose = document.getElementById("trip-purpose").value || "–";
         const notes = document.getElementById("trip-notes").value || "–";
 
- // 🧾 Robust UI updates
+// === HELPER FUNCTIONS ===
+// safeUpdate(), formatDistance(), formatDuration(), etc.
+        
         safeUpdate("summary-purpose", purpose);
         safeUpdate("summary-notes", notes);
         safeUpdate("summary-start", startAddress);
@@ -307,7 +321,6 @@ function endTracking() {
   });
 }
 
-// --- Helpers ---
 function renderSteps(steps) {
   const panel = document.getElementById("directions-panel");
   panel.innerHTML = "";
