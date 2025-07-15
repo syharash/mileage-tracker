@@ -309,23 +309,31 @@ function updateControls() {
   const resumeTrackingBtn = document.getElementById("resumeTrackingBtn");
   const endTrackingBtn = document.getElementById("endTrackingBtn");
 
-  if (tripStatus === 'tracking' || status === 'resumed') {
-  // Trip is idle or ended or resumed
+  if (tripStatus === 'idle') {
+  // Trip is idle or has ended
+  startTrackingBtn.disabled = false;
+  pauseTrackingBtn.disabled = true;
+  resumeTrackingBtn.disabled = true;
+  endTrackingBtn.disabled = true;
+} else if (tripStatus === 'tracking') {
+  // Actively tracking
   startTrackingBtn.disabled = true;
   pauseTrackingBtn.disabled = false;
   resumeTrackingBtn.disabled = true;
   endTrackingBtn.disabled = false;
 } else if (tripStatus === 'paused') {
-  // Actively tracking
-  startTrackingBtn.disabled = true;
-  pauseTrackingBtn.disabled = true;
-  resumeTrackingBtn.disabled = false;
-  endTrackingBtn.disabled = false;
-} else {
+    //Trip has been paused
+    startTrackingBtn.disabled = true;
     pauseTrackingBtn.disabled = true;
+    resumeTrackingBtn.disabled = false;
+    endTrackingBtn.disabled = false;
+} else if (tripStatus === 'resumed') {
+    //Trip has resumed after a pause
+    startTrackingBtn.disabled = true;
+    pauseTrackingBtn.disabled = false;
     resumeTrackingBtn.disabled = true;
-    endTrackingBtn.disabled = true;
-} 
+    endTrackingBtn.disabled = false;
+  }
 }
 
 
