@@ -409,7 +409,9 @@ if (isDebug) {
 } else {
   // Activate on click
   enableDebugBtn.onclick = () => {
-    window.location.search = "debug=true";
+    const url = new URL(window.location.href);
+    rul.searchParams.set("debug", "true");
+    window.location.href = url.toString();
   };
 }
 
