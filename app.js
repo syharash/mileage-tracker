@@ -298,37 +298,31 @@ function startMotionMonitor() {
 }
 
 
-function updateControls() {
+function updateControls(status) {
   const startTrackingBtn = document.getElementById("startTrackingBtn");
   const pauseTrackingBtn = document.getElementById("pauseTrackingBtn");
   const resumeTrackingBtn = document.getElementById("resumeTrackingBtn");
   const endTrackingBtn = document.getElementById("endTrackingBtn");
 
-  if (!tracking) {
+  if (status === 'tracking') {
   // Trip is idle or ended
+  startTrackingBtn.disabled = true;
+  pauseTrackingBtn.disabled = false;
+  resumeTrackingBtn.disabled = true;
+  endTrackingBtn.disabled = false;
+} else if (status === 'paused') {
+  // Actively tracking
+  startTrackingBtn.disabled = true;
+  pauseTrackingBtn.disabled = true;
+  resumeTrackingBtn.disabled = false;
+  endTrackingBtn.disabled = false;
+} else if (status === 'idle') {
+  // Trip is paused
   startTrackingBtn.disabled = false;
   pauseTrackingBtn.disabled = true;
   resumeTrackingBtn.disabled = true;
   endTrackingBtn.disabled = true;
-} else if (tracking && trackingInterval) {
-  // Actively tracking
-  startTrackingBtn.disabled = true;
-  pauseTrackingBtn.disabled = false;
-  resumeTrackingBtn.disabled = false;
-  endTrackingBtn.disabled = false;
-} else if (tracking && !trackingInterval) {
-  // Trip is paused
-  startTrackingBtn.disabled = true;
-  pauseTrackingBtn.disabled = true;
-  resumeTrackingBtn.disabled = false;
-  endTrackingBtn.disabled = false;
-} else if (tracking) {
-  // Tracking without GPS polling (fallback)
-  startTrackingBtn.disabled = true;
-  pauseTrackingBtn.disabled = false;
-  resumeTrackingBtn.disabled = true;
-  endTrackingBtn.disabled = false;
-}
+} 
 }
 
 
