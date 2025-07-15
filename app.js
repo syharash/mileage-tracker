@@ -303,19 +303,19 @@ function startMotionMonitor() {
 }
 
 
-function updateControls(status) {
+function updateControls() {
   const startTrackingBtn = document.getElementById("startTrackingBtn");
   const pauseTrackingBtn = document.getElementById("pauseTrackingBtn");
   const resumeTrackingBtn = document.getElementById("resumeTrackingBtn");
   const endTrackingBtn = document.getElementById("endTrackingBtn");
 
-  if (status === 'tracking' || status === 'resumed') {
+  if (tripStatus === 'tracking' || status === 'resumed') {
   // Trip is idle or ended or resumed
   startTrackingBtn.disabled = true;
   pauseTrackingBtn.disabled = false;
   resumeTrackingBtn.disabled = true;
   endTrackingBtn.disabled = false;
-} else if (status === 'paused') {
+} else if (tripStatus === 'paused') {
   // Actively tracking
   startTrackingBtn.disabled = true;
   pauseTrackingBtn.disabled = true;
