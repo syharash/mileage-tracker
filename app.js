@@ -410,6 +410,23 @@ if (isDebug) {
   // Activate on click
   enableDebugBtn.onclick = () => {
     const url = new URL(window.location.href);
+    if (isDebug) {
+    // 📴 Turn OFF debug: remove 'debug' from URL
+      enableDebugBtn.onclick = () => {
+  const url = new URL(window.location.href);
+
+  if (isDebug) {
+    // 📴 Turn OFF debug: remove 'debug' from URL
+    url.searchParams.delete("debug");
+  } else {
+    // 🟢 Turn ON debug
+    url.searchParams.set("debug", "true");
+  }
+
+        window.location.href = url.toString();
+};
+
+      
     rul.searchParams.set("debug", "true");
     window.location.href = url.toString();
   };
