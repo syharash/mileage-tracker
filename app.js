@@ -21,6 +21,47 @@ if (isDebug) {
   };
 }
 
+function toggleDebug(enable) {
+    const erudaScriptId = 'eruda-script';
+    const existingScript = document.getElementById(erudaScriptId);
+
+    if (enable) {
+        // Load Eruda only if not already initialized
+        if (!window.eruda || !eruda._isInit) {
+            const script = document.createElement('script');
+            script.id = erudaScriptId;
+            script.src = 'https://cdn.jsdelivr.net/npm/eruda';
+            script.onload = () => {
+                eruda.init();
+                // Optionally: eruda.add(erudaDom);
+                console.log('[Debug] Eruda initialized');
+            };
+            document.body.appendChild(script);
+        }
+    } else {
+        // Defensive teardown
+        if (window.eruda && typeof eruda.destroy === 'function') {
+            try {
+                // Optional: destroy specific tools
+                const tools = ['dom', 'console', 'elements'];
+                tools.forEach(tool => {
+                    const instance = eruda.get(tool);
+                    if (instance && typeof instance.destroy === 'function') {
+                        instance.destroy();
+                    }
+                });
+                eruda.destroy(); // Safely remove Eruda UI
+                console.log('[Debug] Eruda destroyed');
+            } catch (err) {
+                console.warn('[Debug] Eruda destroy error:', err);
+            }
+        }
+
+        // Optionally remove script tag
+        if (existingScript) existingScript.remove();
+    }
+}
+
 const fallbackInterval = 60000;
 const motionThreshold = 0.1;
 const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI";
@@ -35,6 +76,26 @@ function safeUpdate(id, value) {
     console.warn(`⚠️ Element with ID "${id}" not found`);
   }
 }
+
+// Wrap in DOMContentLoaded to ensure #debugToggleBtn exists
+document.addEventListener('DOMContentLoaded', () => {
+  const debugBtn = document.getElementById('debugToggleBtn');
+
+  if (debugBtn) {
+    let debugActive = localStorage.getItem("debugMode") === "true";
+
+    // Reflect initial button label
+    debugBtn.textContent = debugActive ? "Disable Debug" : "Enable Debug";
+
+    debugBtn.addEventListener('click', () => {
+      debugActive = !debugActive;
+      localStorage.setItem("debugMode", debugActive.toString());
+      toggleDebug(debugActive);
+      debugBtn.textContent = debugActive ? "Disable Debug" : "Enable Debug";
+    });
+  }
+});
+
 
 // --- INIT ---
 function initMapServices() {
