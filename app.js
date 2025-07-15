@@ -1,7 +1,4 @@
-// === GLOBAL CONFIG & STATE ===
-const fallbackInterval = 60000;
-const motionThreshold = 0.1;
-const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI";
+// == Mileage Tracker – Clean & Consolidated ==
 let tracking = false;
 let tripStatus = 'idle';
 let trackingInterval = null;
@@ -13,91 +10,11 @@ let totalPauseDuration = 0;
 let map, directionsService, directionsRenderer;
 let gpsPoller = null;
 
-// === DEBUG MODE INIT ===
-let isDebug = localStorage.getItem("debugMode") === "true";
+const fallbackInterval = 60000;
+const motionThreshold = 0.1;
+const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI";
 
-if (isDebug) {
-  const script = document.createElement("script");
-  script.src = "//cdn.jsdelivr.net/npm/eruda";
-  document.body.appendChild(script);
-  script.onload = () => {
-    eruda.init();
-    console.log("🛠️ Debug mode is active (persisted)");
-  };
-}
-
-// === DEBUG TOOLS ===
-function toggleDebug(enable) {
-    const erudaScriptId = 'eruda-script';
-    const existingScript = document.getElementById(erudaScriptId);
-
-    if (enable) {
-        // Load Eruda only if not already initialized
-        if (!window.eruda || !eruda._isInit) {
-            const script = document.createElement('script');
-            script.id = erudaScriptId;
-            script.src = 'https://cdn.jsdelivr.net/npm/eruda';
-            script.onload = () => {
-                eruda.init();
-                // Optionally: eruda.add(erudaDom);
-                console.log('[Debug] Eruda initialized');
-            };
-            document.body.appendChild(script);
-        }
-    } else {
-        // Defensive teardown
-        if (window.eruda && typeof eruda.destroy === 'function') {
-            try {
-                // Optional: destroy specific tools
-                const tools = ['dom', 'console', 'elements'];
-                tools.forEach(tool => {
-                    const instance = eruda.get(tool);
-                    if (instance && typeof instance.destroy === 'function') {
-                        instance.destroy();
-                    }
-                });
-                eruda.destroy(); // Safely remove Eruda UI
-                console.log('[Debug] Eruda destroyed');
-            } catch (err) {
-                console.warn('[Debug] Eruda destroy error:', err);
-            }
-        }
-
-        // Optionally remove script tag
-        if (existingScript) existingScript.remove();
-    }
-}
-
-
-
-// === DEBUG TOOLS: UI Toggle Logic ===
-
-document.addEventListener('DOMContentLoaded', () => {
-  const debugBtn = document.getElementById('enableDebugBtn');
-  const badge = document.getElementById('debugBadge');
-
-  if (debugBtn && badge) {
-    let debugActive = localStorage.getItem("debugMode") === "true";
-
-    // Initial UI sync
-    debugBtn.textContent = debugActive ? "🛑 Disable Debug" : "👀 Enable Debug";
-    badge.style.display = debugActive ? "inline-block" : "none";
-
-    // Activate debug state immediately on load if needed
-    toggleDebug(debugActive);
-
-    debugBtn.addEventListener('click', () => {
-      debugActive = !debugActive;
-      localStorage.setItem("debugMode", debugActive.toString());
-      toggleDebug(debugActive);
-      debugBtn.textContent = debugActive ? "🛑 Disable Debug" : "👀 Enable Debug";
-      badge.style.display = debugActive ? "inline-block" : "none";
-    });
-  }
-});
-
-
-// === HELPER FUNCTIONS ===
+// --- Helper ---
 function safeUpdate(id, value) {
   const el = document.getElementById(id);
   if (el) {
@@ -107,29 +24,7 @@ function safeUpdate(id, value) {
   }
 }
 
-// Wrap in DOMContentLoaded to ensure #debugToggleBtn exists
-document.addEventListener('DOMContentLoaded', () => {
-  const debugBtn = document.getElementById('debugToggleBtn');
-
-  if (debugBtn) {
-    let debugActive = localStorage.getItem("debugMode") === "true";
-
-    // Reflect initial button label
-    debugBtn.textContent = debugActive ? "Disable Debug" : "Enable Debug";
-
-    debugBtn.addEventListener('click', () => {
-      debugActive = !debugActive;
-      localStorage.setItem("debugMode", debugActive.toString());
-      toggleDebug(debugActive);
-      debugBtn.textContent = debugActive ? "Disable Debug" : "Enable Debug";
-    });
-  }
-});
-
-
-// === MAP INIT & SERVICES ===
-// initMapServices(), directions setup, fallback polling
-
+// --- INIT ---
 function initMapServices() {
   if (map) return;
   map = new google.maps.Map(document.getElementById("map"), {
@@ -143,9 +38,7 @@ function initMapServices() {
   });
 }
 
-// === ROUTE CALCULATION ===
-// getRoute(start, end) async logic
-
+// --- Route Calculation ---
 async function getRoute(start, end) {
   if (!start || !end) {
     console.warn("Missing start or end location:", { start, end });
@@ -183,9 +76,7 @@ async function getRoute(start, end) {
   }
 }
 
-// === TRACKING CONTROLS ===
-// startTracking(), pauseTracking(), resumeTracking(), endTracking()
-
+// --- Tracking Lifecycle ---
 function startTracking() {
   tripStatus = 'tracking';
   initMapServices();
@@ -195,11 +86,6 @@ function startTracking() {
       longitude: pos.coords.longitude,
       timestamp: Date.now()
     };
-    
-    if (isDebug) {
-    console.log("📍 Trip Start:", tripStart.latitude, tripStart.longitude);
-    }
-    
     tracking = true;
     totalPauseDuration = 0;
     updateStatus("Tracking");
@@ -208,8 +94,6 @@ function startTracking() {
   }, () => showToast("⚠️ Unable to access GPS", "error"));
 }
 
-// === UI DISPLAY & RENDER ===
-// renderSteps(), updateSummary(), updateStatus(), updateControls()
 
 function pauseTracking() {
   // ✅ keep tracking = true
@@ -243,11 +127,7 @@ function endTracking() {
       longitude: pos.coords.longitude,
       timestamp: Date.now()
     };
-    
-    if (isDebug) {
-    console.log("📍 Trip End:", tripEnd.latitude, tripEnd.longitude);
-    }
-    
+
     if (!tripStart || !tripEnd) {
       alert("Trip cannot be ended: Missing location data.");
       console.warn("Missing tripStart or tripEnd");
@@ -262,11 +142,6 @@ function endTracking() {
       const result = await getRoute(tripStart, tripEnd);
       if (result) {
         const leg = result.routes[0].legs[0];
-        
-        if (isDebug) {
-        console.log("🚗 Raw Distance from Directions API:", leg.distance.value, "meters");
-        }
-        
         directionsRenderer.setDirections(result);
         localStorage.setItem("lastRoute", JSON.stringify(result));
 
@@ -278,9 +153,7 @@ function endTracking() {
         const purpose = document.getElementById("trip-purpose").value || "–";
         const notes = document.getElementById("trip-notes").value || "–";
 
-// === HELPER FUNCTIONS ===
-// safeUpdate(), formatDistance(), formatDuration(), etc.
-        
+ // 🧾 Robust UI updates
         safeUpdate("summary-purpose", purpose);
         safeUpdate("summary-notes", notes);
         safeUpdate("summary-start", startAddress);
@@ -303,7 +176,6 @@ function endTracking() {
       if (cached) {
         const result = JSON.parse(cached);
         const leg = result.routes[0].legs[0];
-        console.log("🚗 Raw Distance from Directions API:", leg.distance.value, "meters");
         directionsRenderer.setDirections(result);
         renderSteps(leg.steps);
         showToast("⚠️ Offline: showing last saved route");
@@ -321,6 +193,7 @@ function endTracking() {
   });
 }
 
+// --- Helpers ---
 function renderSteps(steps) {
   const panel = document.getElementById("directions-panel");
   panel.innerHTML = "";
@@ -498,38 +371,4 @@ window.onload = function () {
     const panel = document.getElementById("directions-panel");
     if (panel) panel.innerHTML = "";
   }
-
-const enableDebugBtn = document.getElementById("enableDebugBtn");
-const debugBadge = document.getElementById("debugBadge");
-
-function updateDebugUI() {
-  if (isDebug) {
-    enableDebugBtn.textContent = "🛑 Disable Debug";
-    debugBadge.style.display = "inline-block";
-  } else {
-    enableDebugBtn.textContent = "👀 Enable Debug";
-    debugBadge.style.display = "none";
-  }
-}
-
-enableDebugBtn.onclick = () => {
-  isDebug = !isDebug;
-  localStorage.setItem("debugMode", isDebug.toString());
-  updateDebugUI();
-
-  if (isDebug && typeof eruda === "undefined") {
-    const script = document.createElement("script");
-    script.src = "//cdn.jsdelivr.net/npm/eruda";
-    document.body.appendChild(script);
-    script.onload = () => {
-      eruda.init();
-      console.log("🛠️ Debug mode enabled via toggle");
-    };
-  } else if (!isDebug) {
-    if (typeof eruda !== "undefined" && typeof eruda.destroy === "function") {
-      eruda.destroy();
-      console.log("🔕 Debug mode disabled");
-    }
-  }
-}
 };
