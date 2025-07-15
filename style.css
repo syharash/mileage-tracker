@@ -1,3 +1,4 @@
+/* === Global Reset & Base === */
 body {
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
@@ -15,19 +16,6 @@ header {
   position: relative;
 }
 
-.badge {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background-color: #ffbb00;
-  color: #222;
-  padding: 0.3rem 0.7rem;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 0.8rem;
-  display: none; /* toggled on via JS */
-}
-
 main {
   padding: 1rem;
   max-width: 900px;
@@ -38,44 +26,57 @@ section {
   margin-bottom: 2rem;
 }
 
+/* === Buttons === */
 .controls button,
-.inputs input,
-.inputs textarea,
 .tools button,
 .history button {
-  display: inline-block;
-  margin: 0.4rem 0.3rem;
-  padding: 0.6rem 1rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 6px;
   background-color: #4a90e2;
   color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin: 0.4rem 0.3rem;
 }
 
-.controls button:disabled,
-.history button:disabled {
+button:disabled {
   background-color: #999;
   cursor: not-allowed;
 }
 
+/* === Inputs & Textareas === */
 .inputs input,
 .inputs textarea {
+  background-color: white;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.5rem;
+  margin-top: 0.3rem;
+  margin-bottom: 0.6rem;
   width: 100%;
   box-sizing: border-box;
 }
 
 .inputs textarea {
   min-height: 80px;
+  resize: vertical;
 }
 
+/* === Summary & History === */
 .summary p,
 .history ul {
   margin: 0.5rem 0;
 }
 
+#trip-log {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+/* === Directions Panel === */
 #directions-panel {
   background-color: #fff;
   border: 1px solid #ccc;
@@ -84,6 +85,21 @@ section {
   overflow-y: auto;
 }
 
+/* === Debug Badge === */
+.badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: #ffbb00;
+  color: #222;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  display: none; /* toggled via JS */
+}
+
+/* === Toast Notification === */
 .toast {
   position: fixed;
   bottom: 1rem;
@@ -105,15 +121,21 @@ section {
   pointer-events: auto;
 }
 
+/* === Responsive Tweaks === */
 @media screen and (max-width: 600px) {
   body {
     font-size: 0.95rem;
   }
 
   .controls button,
-  .history button,
-  .tools button {
+  .tools button,
+  .history button {
     width: 100%;
     margin: 0.4rem 0;
+  }
+
+  .inputs input,
+  .inputs textarea {
+    font-size: 1rem;
   }
 }
