@@ -9,11 +9,7 @@ let pauseStartTime = null;
 let totalPauseDuration = 0;
 let map, directionsService, directionsRenderer;
 let gpsPoller = null;
-
-const fallbackInterval = 60000;
-const motionThreshold = 0.1;
-const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI";
-const isDebug = window.location.search.includes("debug=true");
+let isDebug = localStorage.getItem("debugMode") === "true";
 
 if (isDebug) {
   const script = document.createElement("script");
@@ -21,9 +17,13 @@ if (isDebug) {
   document.body.appendChild(script);
   script.onload = () => {
     eruda.init();
-    console.log("🛠️ Eruda console enabled!");
+    console.log("🛠️ Debug mode is active (persisted)");
   };
 }
+
+const fallbackInterval = 60000;
+const motionThreshold = 0.1;
+const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI";
 
 
 // --- Helper ---
@@ -400,36 +400,39 @@ window.onload = function () {
   }
 
   const enableDebugBtn = document.getElementById("enableDebugBtn");
-const debugBadge = document.getElementById("debugBadge");
+  const debugBadge = document.getElementById("debugBadge");
 
-if (isDebug) {
-  // Hide the button, show the badge
-  enableDebugBtn.style.display = "none";
-  debugBadge.style.display = "inline-block";
-} else {
-  // Activate on click
-  enableDebugBtn.onclick = () => {
-    const url = new URL(window.location.href);
-    if (isDebug) {
-    // 📴 Turn OFF debug: remove 'debug' from URL
-      enableDebugBtn.onclick = () => {
-  const url = new URL(window.location.href);
-
+  function updateDebugUI() {
   if (isDebug) {
-    // 📴 Turn OFF debug: remove 'debug' from URL
-    url.searchParams.delete("debug");
+    enableDebugBtn.textContent = "🛑 Disable Debug";
+    debugBadge.style.display = "inline-block";
   } else {
-    // 🟢 Turn ON debug
-    url.searchParams.set("debug", "true");
+    enableDebugBtn.textContent = "👀 Enable Debug";
+    debugBadge.style.display = "none";
   }
+}
 
-        window.location.href = url.toString();
+enableDebugBtn.onclick = () => {
+  isDebug = !isDebug;
+  localStorage.setItem("debugMode", isDebug.toString());
+  updateDebugUI();
+
+  if (isDebug && typeof eruda === "undefined") {
+    const script = document.createElement("script");
+    script.src = "//cdn.jsdelivr.net/npm/eruda";
+    document.body.appendChild(script);
+    script.onload = () => {
+      eruda.init();
+      console.log("🛠️ Debug mode enabled via toggle");
+    };
+  } else if (!isDebug && typeof eruda !== "undefined") {
+    eruda.destroy();
+    console.log("🔕 Debug mode disabled");
+  }
 };
 
-      
-    rul.searchParams.set("debug", "true");
-    window.location.href = url.toString();
-  };
-}
+updateDebugUI();
+
+
 
 };
