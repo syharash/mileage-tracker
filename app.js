@@ -326,7 +326,7 @@ function updateControls() {
     startTrackingBtn.disabled = true;
     pauseTrackingBtn.disabled = true;
     resumeTrackingBtn.disabled = false;
-    endTrackingBtn.disabled = false;
+    endTrackingBtn.disabled = true;
 } else if (tripStatus === 'resumed') {
     //Trip has resumed after a pause
     startTrackingBtn.disabled = true;
