@@ -118,6 +118,30 @@ button:disabled {
   border-radius: 6px;
 }
 
+/* Map & Directions */
+#map {
+  height: 300px;
+  margin-bottom: 20px;
+}
+
+#directions-panel {
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  font-size: 0.95em;
+  line-height: 1.4;
+}
+
+#directions-panel h4 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: bold;
+  color: #333;
+}
+
+#directions-panel li {
+  margin-bottom: 8px;
+}
 /* Toast */
 #toast {
   position: fixed;
