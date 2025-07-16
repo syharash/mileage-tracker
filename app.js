@@ -381,15 +381,24 @@ function restoreLastTrip() {
 
   const result = JSON.parse(cached);
   const leg = result.routes[0].legs[0];
-
+  
   document.getElementById("summary-start").textContent = leg.start_address;
   document.getElementById("summary-end").textContent = leg.end_address;
   document.getElementById("summary-distance").textContent = `${(leg.distance.value / 1609.34).toFixed(2)} mi`;
   document.getElementById("summary-duration").textContent = `${Math.round(leg.duration.value / 60)} min`;
 
-  directionsRenderer.setDirections(result);
-  renderSteps(leg.steps);
+directionsRenderer.setDirections(result);
 
+const panel = document.getElementById("directions-panel");
+panel.innerHTML = "";
+
+result.routes[0].legs.forEach((leg, index) => {
+  const header = document.createElement("h4");
+  header.textContent = `Leg ${index + 1}: ${leg.start_address} → ${leg.end_address}`;
+  panel.appendChild(header);
+
+  renderSteps(leg.steps); // This will render each step with icons, distance, and duration
+});
   showToast("🔄 Last trip restored");
 }
 function toggleHelp() {
