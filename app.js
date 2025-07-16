@@ -243,19 +243,54 @@ function endTracking() {
 function renderSteps(steps) {
   const panel = document.getElementById("directions-panel");
   panel.innerHTML = "";
+
+  steps.forEach(step => {
+    const li = document.createElement("li");
+
+    const instruction = stripHTML(step.instructions || "Continue");
+    const distance = step.distance?.text || "";
+    const duration = step.duration?.text || "";
+
+    li.textContent = `${instruction} (${distance}, ${duration})`;
+
+    const icon = getIconForManeuver(step.maneuver || "default");
+    li.prepend(icon);
+
+    panel.appendChild(li);
+  });
+}
+
+function getIconForManeuver(type) {
   const iconMap = {
     "turn-left": "⬅️",
     "turn-right": "➡️",
     "merge": "🔀",
-    "ramp-right": "↪️",
-    "ramp-left": "↩️"
+    "ramp-left": "↖️",
+    "ramp-right": "↘️",
+    "roundabout-left": "⏪",
+    "roundabout-right": "⏩",
+    "straight": "⬆️",
+    "uturn-left": "↩️",
+    "uturn-right": "↪️",
+    "fork-left": "🡸",
+    "fork-right": "🡺",
+    "default": "➡️"
   };
-  steps.forEach(step => {
-    const div = document.createElement("div");
-    const icon = iconMap[step.maneuver] || "➡️";
-    div.innerHTML = `${icon} ${step.html_instructions}`;
-    panel.appendChild(div);
-  });
+
+  return makeIcon(iconMap[type] || iconMap["default"]);
+}
+
+function makeIcon(symbol) {
+  const span = document.createElement("span");
+  span.textContent = symbol + " ";
+  span.style.marginRight = "6px";
+  return span;
+}
+
+function stripHTML(html) {
+  const temp = document.createElement("div");
+  temp.innerHTML = html;
+  return temp.textContent || temp.innerText || "";
 }
 
 function logTrip(purpose, notes, distance, duration, paused) {
