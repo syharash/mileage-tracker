@@ -285,6 +285,26 @@ function clearHistory() {
   showToast("🧹 Trip history cleared");
 }
 
+function restoreLastTrip() {
+  const cached = localStorage.getItem("lastRoute");
+  if (!cached) {
+    showToast("🕵️ No saved trip to restore");
+    return;
+  }
+
+  const result = JSON.parse(cached);
+  const leg = result.routes[0].legs[0];
+
+  document.getElementById("summary-start").textContent = leg.start_address;
+  document.getElementById("summary-end").textContent = leg.end_address;
+  document.getElementById("summary-distance").textContent = `${(leg.distance.value / 1609.34).toFixed(2)} mi`;
+  document.getElementById("summary-duration").textContent = `${Math.round(leg.duration.value / 60)} min`;
+
+  directionsRenderer.setDirections(result);
+  renderSteps(leg.steps);
+
+  showToast("🔄 Last trip restored");
+}
 function toggleHelp() {
   const h = document.getElementById("help-screen");
   h.style.display = h.style.display === "none" ? "block" : "none";
@@ -375,6 +395,7 @@ window.onload = function () {
 
   document.getElementById("trip-purpose").value = "";
   document.getElementById("trip-notes").value = "";
+  document.getElementById("restoreTrip").onclick = restoreLastTrip;
 
   if (!document.getElementById("toast")) {
     console.warn("🚨 Toast element not found.");
