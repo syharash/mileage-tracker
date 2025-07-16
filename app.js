@@ -14,6 +14,37 @@ const fallbackInterval = 60000;
 const motionThreshold = 0.1;
 const apiKey = "AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI";
 
+// ---- Login and Logout Handler Function ---- //
+function handleLogin(response) {
+  const user = jwt_decode(response.credential);
+  localStorage.setItem("userEmail", user.email);
+  localStorage.setItem("userName", user.name);
+  showToast(`👋 Welcome, ${user.name}`);
+
+  // Optionally show app UI
+  document.querySelector(".container").style.display = "block";
+
+  // Load user-specific trip history
+  loadTripHistory();
+}
+
+function logoutUser() {
+  localStorage.removeItem("userEmail");
+  localStorage.removeItem("userName");
+
+  // Optionally clear tripLog from memory
+  tripLog = [];
+  document.getElementById("trip-log").innerHTML = "";
+  updateSummary();
+
+  // Hide app UI
+  document.querySelector(".container").style.display = "none";
+
+  showToast("👋 Logged out");
+  setTimeout(() => location.reload(), 1000);
+}
+
+
 // --- Helper ---
 function safeUpdate(id, value) {
   const el = document.getElementById(id);
@@ -238,6 +269,7 @@ function logTrip(purpose, notes, distance, duration, paused) {
     reimbursement: `$${reimbursement}`
   };
   tripLog.push(entry);
+  saveTripHistory();
 
   const li = document.createElement("li");
   li.textContent = `${entry.date} | ${entry.purpose} | ${entry.miles} mi | ${entry.reimbursement}`;
@@ -245,6 +277,24 @@ function logTrip(purpose, notes, distance, duration, paused) {
   updateSummary();
 }
 
+function saveTripHistory() {
+  const user = localStorage.getItem("userEmail") || "default";
+  localStorage.setItem(`tripHistory_${user}`, JSON.stringify(tripLog));
+}
+
+function loadTripHistory() {
+  const user = localStorage.getItem("userEmail") || "default";
+  const saved = localStorage.getItem(`tripHistory_${user}`);
+  if (saved) {
+    tripLog = JSON.parse(saved);
+    tripLog.forEach(entry => {
+      const li = document.createElement("li");
+      li.textContent = `${entry.date} | ${entry.purpose} | ${entry.miles} mi | ${entry.reimbursement}`;
+      document.getElementById("trip-log").appendChild(li);
+    });
+    updateSummary();
+  }
+}
 function updateSummary() {
   let today = 0, week = 0;
   const todayDate = new Date().toDateString();
@@ -396,6 +446,7 @@ window.onload = function () {
   document.getElementById("trip-purpose").value = "";
   document.getElementById("trip-notes").value = "";
   document.getElementById("restoreTrip").onclick = restoreLastTrip;
+  document.getElementById("logoutBtn").onclick = logoutUser;
 
   if (!document.getElementById("toast")) {
     console.warn("🚨 Toast element not found.");
