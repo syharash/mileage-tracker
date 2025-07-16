@@ -26,10 +26,36 @@
     async
     defer>
   </script>
+   
+<-!---- Google Identity script ---->  
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+  
 </head>
+  
 <body>
   <div class="container">
     <h2>Mileage Tracker 🚗</h2>
+
+    <-!---- Google Sing-IN ---->
+    <div id="g_id_onload"
+      data-client_id="458154195187-k30hob25jnri4j65t6abfemdstvjbngh.apps.googleusercontent.com"
+      data-callback="handleLogin"
+      data-auto_prompt="false">
+    </div>
+      
+    <div class="g_id_signin"
+      data-type="standard"
+      data-size="large"
+      data-theme="outline"
+      data-text="sign_in_with"
+      data-shape="rectangular"
+      data-logo_alignment="left">
+    </div>
+
+    <-!---- Wrapping the app UI in this container to hide it by default ---->  
+    <div class="container" style="display:none;">
+
 
     <!-- Tagging & Notes -->
     <div class="field-group">
