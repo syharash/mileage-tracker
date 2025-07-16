@@ -38,6 +38,19 @@ function initMapServices() {
   });
 }
 
+function loadTripHistory() {
+  const saved = localStorage.getItem("tripHistory");
+  if (saved) {
+    tripLog = JSON.parse(saved);
+    tripLog.forEach(entry => {
+      const li = document.createElement("li");
+      li.textContent = `${entry.date} | ${entry.purpose} | ${entry.miles} mi | ${entry.reimbursement}`;
+      document.getElementById("trip-log").appendChild(li);
+    });
+    updateSummary();
+  }
+}
+
 // --- Route Calculation ---
 async function getRoute(start, end) {
   if (!start || !end) {
@@ -342,6 +355,7 @@ window.onload = function () {
   initMapServices();
   updateStatus("Idle");
   updateControls();
+  loadTripHistory();
 
   const buttonHandlers = {
     startTrackingBtn: startTracking,
