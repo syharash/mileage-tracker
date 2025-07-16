@@ -22,7 +22,7 @@
   window.initMap = initMap;
 </script>
 
-  <!-- Google Maps JavaScript API -->
+  <-!-- Google Maps JavaScript API -->
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI&libraries=places&callback=initMap"
     async
@@ -36,9 +36,6 @@
 </head>
   
 <body>
-  <div class="container">
-    <h2>Mileage Tracker 🚗</h2>
-
     <-!---- Google Sing-IN ---->
     <div id="g_id_onload"
       data-client_id="458154195187-k30hob25jnri4j65t6abfemdstvjbngh.apps.googleusercontent.com"
@@ -55,9 +52,10 @@
       data-logo_alignment="left">
     </div>
 
-    <-!---- Wrapping the app UI in this container to hide it by default ---->  
+    <-!---- App UI (hidden until login) ---->  
     <div class="container" style="display:none;">
-
+     <h2>Mileage Tracker 🚗</h2>
+     <p id="userBadge"></p>
 
     <!-- Tagging & Notes -->
     <div class="field-group">
