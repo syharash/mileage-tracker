@@ -20,7 +20,8 @@ function handleLogin(response) {
   localStorage.setItem("userEmail", user.email);
   localStorage.setItem("userName", user.name);
   showToast(`👋 Welcome, ${user.name}`);
-
+  document.getElementById("userBadge").textContent = `Logged in as: ${user.name} (${user.email})`;
+  
   // Optionally show app UI
   document.querySelector(".container").style.display = "block";
 
@@ -42,6 +43,7 @@ function logoutUser() {
 
   showToast("👋 Logged out");
   setTimeout(() => location.reload(), 1000);
+  document.getElementById("userBadge").textContent = "";
 }
 
 
