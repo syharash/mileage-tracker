@@ -22,21 +22,21 @@
 window.initMap = initMap;
 </script>
 
- // <-!-- Google Maps JavaScript API -->
+ <!-- Google Maps JavaScript API -->
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI&libraries=places&callback=initMap"
     async
     defer>
   </script>
    
-// <-!---- Google Identity script ---->  
+ <!---- Google Identity script ---->  
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
   
 </head>
   
 <body>
- //   <-!---- Google Sing-IN ---->
+    <!---- Google Sing-IN ---->
     <div id="g_id_onload"
       data-client_id="458154195187-k30hob25jnri4j65t6abfemdstvjbngh.apps.googleusercontent.com"
       data-callback="handleLogin"
@@ -52,7 +52,7 @@ window.initMap = initMap;
       data-logo_alignment="left">
     </div>
 
-//    <-!---- App UI (hidden until login) ---->  
+ <!---- App UI (hidden until login) ---->  
     <div class="container" style="display:none;">
      <h2>Mileage Tracker 🚗</h2>
      <p id="userBadge"></p>
