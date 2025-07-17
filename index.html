@@ -1,142 +1,130 @@
-/* Base Styles */
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #f8f9fa;
-  color: #333;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mileage Tracker App</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
-}
+  <p id="userBadge" style="font-weight: bold; color: #555; margin-bottom: 10px;"></p>
 
-h2, h3, h4 {
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-  color: #222;
-}
-
-.field-group {
-  margin-bottom: 1rem;
-}
-
-label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-input[type="text"],
-input[type="number"],
-textarea {
-  width: 100%;
-  padding: 8px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-}
-
-textarea {
-  resize: vertical;
-}
-
-button {
-  padding: 10px 16px;
-  font-size: 1rem;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:disabled {
-  background-color: #999;
-  cursor: not-allowed;
-}
-
-button:hover:not(:disabled) {
-  background-color: #0056b3;
-}
-
-ul#trip-log {
-  list-style-type: disc;
-  padding-left: 20px;
-}
-
-#toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #222;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 8px;
-  display: none;
-  z-index: 1000;
-}
-
-/* Responsive Tweaks for Mobile Devices */
-@media screen and (max-width: 600px) {
-  body {
-    font-size: 15px;
-    padding: 0 10px;
+  <script>
+  function initMap() {
+    const map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: 38.58, lng: -121.49 }, // Sacramento
+      zoom: 12,
+    });
   }
 
-  h2, h3, h4 {
-    font-size: 1.1em;
-    margin: 0.5em 0;
-  }
+  // Expose it globally (necessary in some modern setups)
+window.initMap = initMap;
+</script>
 
-  .container {
-    padding: 12px;
-  }
+ <!-- Google Maps JavaScript API -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAInvy6GdRdnuYVJGlde1gX0VINpU5AsJI&libraries=places&callback=initMap"
+    async
+    defer>
+  </script>
+   
+ <!---- Google Identity script ---->  
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+  
+</head>
+  
+<body>
+    <!---- Google Sing-IN ---->
+    <div id="g_id_onload"
+      data-client_id="458154195187-k30hob25jnri4j65t6abfemdstvjbngh.apps.googleusercontent.com"
+      data-callback="handleLogin"
+      data-auto_prompt="false">
+    </div>
+      
+    <div class="g_id_signin"
+      data-type="standard"
+      data-size="large"
+      data-theme="outline"
+      data-text="sign_in_with"
+      data-shape="rectangular"
+      data-logo_alignment="left">
+    </div>
 
-  .button-group {
-    flex-direction: column;
-    gap: 12px;
-  }
+ <!---- App UI (hidden until login) ---->  
+    <div class="container" style="display:none;">
+     <h2>Mileage Tracker 🚗</h2>
+     <p id="userBadge"></p>
 
-  button {
-    width: 100%;
-    padding: 12px;
-    font-size: 1em;
-  }
+    <!-- Tagging & Notes -->
+    <div class="field-group">
+      <label for="trip-purpose">Purpose / Client:</label>
+      <input type="text" id="trip-purpose" placeholder="e.g. Site visit" />
+    </div>
 
-  input[type="text"],
-  input[type="number"],
-  textarea {
-    padding: 10px;
-    font-size: 1em;
-  }
+    <div class="field-group">
+      <label for="trip-notes">Notes:</label>
+      <textarea id="trip-notes" rows="2" placeholder="Any observations…"></textarea>
+    </div>
 
-  #map {
-    height: 200px;
-  }
+    <label for="rate">Reimbursement Rate ($/mi):</label>
+    <input type="number" id="rate" value="0.655" step="0.001" />
 
-  #directions-panel {
-    font-size: 0.9em;
-    padding: 8px;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-  }
+    <!-- Action Buttons -->
+    <div class="button-group">
+     <button id="startTrackingBtn">Start Trip</button>
+     <button id="pauseTrackingBtn" disabled>Pause Trip</button>
+     <button id="resumeTrackingBtn" disabled>Resume Trip</button>
+     <button id="endTrackingBtn" disabled>End Trip</button>
+     <button id="downloadCSVBtn">Download CSV</button>
+     <button id="clearHistoryBtn">Clear History</button>
+     <button id="toggleHelpBtn">Help</button>
+     <button id="restoreTrip">Restore Last Trip</button> 
+     <button id="logoutBtn">Logout</button> 
+    </div>
 
-  #trip-log li {
-    font-size: 0.9em;
-  }
+    <!-- Trip Log -->
+    <h3>Trip Log 📍</h3>
+    <ul id="trip-log"></ul>
 
-  #toast {
-    font-size: 0.85em;
-    padding: 8px 16px;
-  }
+    <!-- Summary -->
+    <h3>Summary 🧾</h3>
+    <p><strong>Today:</strong> <span id="today-summary">0 mi | $0.00</span></p>
+    <p><strong>This Week:</strong> <span id="week-summary">0 mi | $0.00</span></p>
 
-  #help-screen {
-    font-size: 0.9em;
-  }
-}
+    <div id="trip-summary">
+      <h4>🧭 Last Trip Summary</h4>
+      <p><strong>Status:</strong> <span id="tracking-status">Idle</span></p>
+      <p><strong>Purpose:</strong> <span id="summary-purpose">–</span></p>
+      <p><strong>Notes:</strong> <span id="summary-notes">–</span></p>
+      <p><strong>Start:</strong> <span id="summary-start">–</span></p>
+      <p><strong>End:</strong> <span id="summary-end">–</span></p>
+      <p><strong>Distance:</strong> <span id="summary-distance">0 mi</span></p>
+      <p><strong>Duration:</strong> <span id="summary-duration">–</span></p>
+      <p><strong>Paused Time:</strong> <span id="pause-summary">0 min</span></p>
+      <p><strong>Last Distance:</strong> <span id="lastDistance">–</span></p>
+      <p><strong>Last Duration:</strong> <span id="lastDuration">–</span></p>
+    </div>
+
+    <!-- Map & Directions -->
+    <div id="map"></div>
+    <div id="directions-panel"></div>
+
+    <!-- Help -->
+    <div id="help-screen" style="display:none;">
+      <h3>📘 Help Guide</h3>
+      <p>1. Fill in purpose & notes.</p>
+      <p>2. Tap “Start Trip” to begin.</p>
+      <p>3. Pause/resume as needed.</p>
+      <p>4. Tap “End Trip” to finalize and view recap.</p>
+      <p>5. Export CSV or clear history.</p>
+    </div>
+
+    <!-- Toast Message Container -->
+    <div id="toast"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
