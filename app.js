@@ -1,4 +1,5 @@
 // == Mileage Tracker – Clean & Consolidated ==
+let tripPoints = [];
 let tracking = false;
 let tripStatus = 'idle';
 let trackingInterval = null;
@@ -124,6 +125,19 @@ async function getRoute(start, end) {
 
 // --- Tracking Lifecycle ---
 function startTracking() {
+  // --- Fallback distance calculation or route visualization
+  tripPoints = [];
+  trackingInterval = setInterval(() => {
+  navigator.geolocation.getCurrentPosition(pos => {
+    tripPoints.push({
+      lat: pos.coords.latitude,
+      lng: pos.coords.longitude,
+      timestamp: Date.now()
+    });
+  });
+}, 10000); // every 10 seconds
+
+  // --- Distance Tracking 
   tripStatus = 'tracking';
   initMapServices();
   navigator.geolocation.getCurrentPosition(pos => {
@@ -210,6 +224,12 @@ function endTracking() {
         safeUpdate("lastDistance", `${distanceMi} mi`);
         safeUpdate("lastDuration", `${durationMin} min`);
 
+        const rate = parseFloat(document.getElementById("rate").value || "0");
+        const reimbursement = (distanceMi * rate).toFixed(2);
+        safeUpdate("summary-amount", `$${reimbursement}`);
+        safeUpdate("lastAmount", `$${reimbursement}`);
+        
+        
         renderSteps(leg.steps);
         logTrip(purpose, notes, distanceMi, durationMin, pausedMin);
         showToast(`✅ Trip complete: ${distanceMi} mi`);
@@ -236,6 +256,7 @@ function endTracking() {
   }, () => {
     showToast("⚠️ GPS access failed", "error");
     updateStatus("Trip Complete");
+    downloadCSV();
   });
 }
 
@@ -356,11 +377,14 @@ function downloadCSV() {
   tripLog.forEach(t => {
     csv += `${t.date},${t.purpose},${t.notes},${t.miles},${t.duration},${t.paused},${t.reimbursement}\n`;
   });
+  
   const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
+  const timestamp = new Date().toISOString().replace(/[:\-T]/g, "_").split(".")[0];
+
   a.href = url;
-  a.download = "mileage_log.csv";
+  a.download = `mileage_log_${timestamp}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
